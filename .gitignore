@@ -6,3 +6,12 @@ __pycache__/
 .ipynb_checkpoints/
 .DS_Store
 .codegraph/
+
+# harness files — local only, never commit
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+.claude/
+.codex/
+.wolf/
+.specify/
