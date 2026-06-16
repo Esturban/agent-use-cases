@@ -90,7 +90,7 @@
     {
       "id": 8,
       "slug": "8-multi-agent-research",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "langgraph",
       "domain": "strategy",
