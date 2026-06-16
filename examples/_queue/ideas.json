@@ -4,7 +4,7 @@
   "_priority_values": ["high", "medium", "low"],
   "queue": [
     { "id": 1, "slug": "1-basic-react-agent", "status": "done", "priority": "high", "framework": "langgraph" },
-    { "id": 2, "slug": "2-tool-calling", "status": "pending", "priority": "high", "framework": "langgraph" },
+    { "id": 2, "slug": "2-tool-calling", "status": "done", "priority": "high", "framework": "langgraph" },
     { "id": 3, "slug": "3-structured-output", "status": "pending", "priority": "high", "framework": "langgraph" },
     { "id": 4, "slug": "4-conversation-memory", "status": "pending", "priority": "high", "framework": "langgraph" },
     { "id": 5, "slug": "5-basic-rag", "status": "pending", "priority": "medium", "framework": "langgraph" },
