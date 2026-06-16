@@ -1,0 +1,41 @@
+name: Auto PR → main
+
+on:
+  push:
+    branches: [dev]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  open-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build PR body from recent commits
+        id: body
+        run: |
+          LOG=$(git log origin/main..HEAD --oneline --no-decorate | head -20)
+          echo "log<<EOF" >> $GITHUB_OUTPUT
+          echo "$LOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create or update PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          EXISTING=$(gh pr list --head dev --base main --json number --jq '.[0].number // empty')
+          TITLE="feat: $(git log -1 --pretty=%s)"
+          BODY="## What changed\n\n\`\`\`\n${{ steps.body.outputs.log }}\n\`\`\`\n\n---\n👋 Review and merge when ready."
+
+          if [ -z "$EXISTING" ]; then
+            URL=$(gh pr create --base main --head dev --title "$TITLE" --body "$(printf "$BODY")")
+            echo "PR created: $URL"
+          else
+            gh pr edit "$EXISTING" --title "$TITLE" --body "$(printf "$BODY")"
+            echo "PR #$EXISTING updated"
+          fi
