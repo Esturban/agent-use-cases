@@ -40,7 +40,7 @@
     {
       "id": 3,
       "slug": "3-invoice-extractor",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "finance",
@@ -50,7 +50,7 @@
     {
       "id": 4,
       "slug": "4-lead-qualifier",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "sales",
@@ -60,7 +60,7 @@
     {
       "id": 5,
       "slug": "5-support-ticket-router",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "langgraph",
       "domain": "customer-service",
@@ -70,7 +70,7 @@
     {
       "id": 6,
       "slug": "6-resume-screener",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "langgraph",
       "domain": "hr",
@@ -80,7 +80,7 @@
     {
       "id": 7,
       "slug": "7-rfp-parser",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "langgraph",
       "domain": "procurement",
@@ -90,7 +90,7 @@
     {
       "id": 8,
       "slug": "8-multi-agent-research",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "langgraph",
       "domain": "strategy",

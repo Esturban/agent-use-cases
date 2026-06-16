@@ -1,5 +1,8 @@
 # 2-email-triage
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/2-email-triage/email_triage_workbook.ipynb)
+
+
 An agent that reads a raw email and returns a **typed classification** --
 urgency, category, a one-line summary, and a recommended action.
 
