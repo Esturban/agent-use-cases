@@ -80,7 +80,7 @@
     {
       "id": 7,
       "slug": "7-rfp-parser",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "langgraph",
       "domain": "procurement",
