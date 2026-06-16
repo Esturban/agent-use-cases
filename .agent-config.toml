@@ -1,2 +1,0 @@
-tracked = ["claude", "agents_doc"]
-local_only = ["codegraph"]

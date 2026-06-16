@@ -1,5 +1,8 @@
 # 4-lead-qualifier
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/4-lead-qualifier/lead_qualifier_workbook.ipynb)
+
+
 An agent that scores a sales lead against an Ideal Customer Profile (ICP)
 and returns a typed result -- score, tier, and the exact criteria met or missed.
 

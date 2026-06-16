@@ -11,6 +11,7 @@ __pycache__/
 AGENTS.md
 CLAUDE.md
 GEMINI.md
+.agent-config.toml
 .claude/
 .codex/
 .wolf/

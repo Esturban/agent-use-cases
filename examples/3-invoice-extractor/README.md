@@ -1,5 +1,8 @@
 # 3-invoice-extractor
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/3-invoice-extractor/invoice_extractor_workbook.ipynb)
+
+
 An agent that reads raw invoice text and returns a **fully structured Invoice object** --
 vendor, date, every line item, subtotal, tax, and total.
 
