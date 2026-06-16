@@ -1,0 +1,15 @@
+{
+  "_description": "Teaching loop queue. Each entry is one lesson/example. Pick the next pending item by priority and scaffold it with the 4-phase commit protocol in AGENTS.md.",
+  "_status_values": ["pending", "in-progress", "done", "skipped"],
+  "_priority_values": ["high", "medium", "low"],
+  "queue": [
+    { "id": 1, "slug": "1-basic-react-agent", "status": "done", "priority": "high", "framework": "langgraph" },
+    { "id": 2, "slug": "2-tool-calling", "status": "pending", "priority": "high", "framework": "langgraph" },
+    { "id": 3, "slug": "3-structured-output", "status": "pending", "priority": "high", "framework": "langgraph" },
+    { "id": 4, "slug": "4-conversation-memory", "status": "pending", "priority": "high", "framework": "langgraph" },
+    { "id": 5, "slug": "5-basic-rag", "status": "pending", "priority": "medium", "framework": "langgraph" },
+    { "id": 6, "slug": "6-multi-tool-agent", "status": "pending", "priority": "medium", "framework": "langgraph" },
+    { "id": 7, "slug": "7-human-in-the-loop", "status": "pending", "priority": "medium", "framework": "langgraph" },
+    { "id": 8, "slug": "8-multi-agent-supervisor", "status": "pending", "priority": "low", "framework": "langgraph" }
+  ]
+}
