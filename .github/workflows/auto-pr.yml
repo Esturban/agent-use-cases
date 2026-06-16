@@ -11,6 +11,8 @@ permissions:
 jobs:
   open-pr:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,12 +32,12 @@ jobs:
         run: |
           EXISTING=$(gh pr list --head dev --base main --json number --jq '.[0].number // empty')
           TITLE="feat: $(git log -1 --pretty=%s)"
-          BODY="## What changed\n\n\`\`\`\n${{ steps.body.outputs.log }}\n\`\`\`\n\n---\n👋 Review and merge when ready."
+          BODY=$(printf "## What changed\n\n\`\`\`\n%s\n\`\`\`\n\n---\n👋 Review and merge when ready." "${{ steps.body.outputs.log }}")
 
           if [ -z "$EXISTING" ]; then
-            URL=$(gh pr create --base main --head dev --title "$TITLE" --body "$(printf "$BODY")")
+            URL=$(gh pr create --base main --head dev --title "$TITLE" --body "$BODY")
             echo "PR created: $URL"
           else
-            gh pr edit "$EXISTING" --title "$TITLE" --body "$(printf "$BODY")"
+            gh pr edit "$EXISTING" --title "$TITLE" --body "$BODY"
             echo "PR #$EXISTING updated"
           fi
