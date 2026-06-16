@@ -50,7 +50,7 @@
     {
       "id": 4,
       "slug": "4-lead-qualifier",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "sales",
