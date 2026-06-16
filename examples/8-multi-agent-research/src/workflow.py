@@ -60,8 +60,8 @@ def run(topic: str) -> dict:
     writer_input = (
         f"Research question: {refined_question}\n\n"
         f"Key facts:\n" + "\n".join(f"- {f}" for f in research.key_facts) + "\n\n"
-        f"Trends:\n" + "\n".join(f"- {t}" for t in research.trends) + "\n\n"
-        f"Gaps:\n" + "\n".join(f"- {g}" for g in research.gaps)
+        "Trends:\n" + "\n".join(f"- {t}" for t in research.trends) + "\n\n"
+        "Gaps:\n" + "\n".join(f"- {g}" for g in research.gaps)
     )
     writer = WRITER_SYSTEM | llm.with_structured_output(WrittenBrief)
     brief: WrittenBrief = writer.invoke(writer_input)
