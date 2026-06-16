@@ -1,15 +1,79 @@
 {
-  "_description": "Teaching loop queue. Each entry is one lesson/example. Pick the next pending item by priority and scaffold it with the 4-phase commit protocol in AGENTS.md.",
+  "_description": "Teaching loop queue. Each entry is one real-world agent use case. Pick the next pending item by priority and scaffold it with the 4-phase commit protocol in AGENTS.md.",
   "_status_values": ["pending", "in-progress", "done", "skipped"],
   "_priority_values": ["high", "medium", "low"],
   "queue": [
-    { "id": 1, "slug": "1-basic-react-agent", "status": "done", "priority": "high", "framework": "langgraph" },
-    { "id": 2, "slug": "2-tool-calling", "status": "done", "priority": "high", "framework": "langgraph" },
-    { "id": 3, "slug": "3-structured-output", "status": "pending", "priority": "high", "framework": "langgraph" },
-    { "id": 4, "slug": "4-conversation-memory", "status": "pending", "priority": "high", "framework": "langgraph" },
-    { "id": 5, "slug": "5-basic-rag", "status": "pending", "priority": "medium", "framework": "langgraph" },
-    { "id": 6, "slug": "6-multi-tool-agent", "status": "pending", "priority": "medium", "framework": "langgraph" },
-    { "id": 7, "slug": "7-human-in-the-loop", "status": "pending", "priority": "medium", "framework": "langgraph" },
-    { "id": 8, "slug": "8-multi-agent-supervisor", "status": "pending", "priority": "low", "framework": "langgraph" }
+    {
+      "id": 1,
+      "slug": "1-basic-react-agent",
+      "status": "done",
+      "priority": "high",
+      "framework": "langgraph",
+      "domain": "intro",
+      "description": "Hello world ReAct agent -- model loops through reason-act-observe with math tools"
+    },
+    {
+      "id": 2,
+      "slug": "2-email-triage",
+      "status": "pending",
+      "priority": "high",
+      "framework": "langgraph",
+      "domain": "operations",
+      "description": "Classify inbound emails by urgency and category -- first real-world structured extraction"
+    },
+    {
+      "id": 3,
+      "slug": "3-invoice-extractor",
+      "status": "pending",
+      "priority": "high",
+      "framework": "langgraph",
+      "domain": "finance",
+      "description": "Extract vendor, amount, date, and line items from invoice text using Pydantic schemas"
+    },
+    {
+      "id": 4,
+      "slug": "4-lead-qualifier",
+      "status": "pending",
+      "priority": "high",
+      "framework": "langgraph",
+      "domain": "sales",
+      "description": "Score inbound sales leads against ICP criteria and recommend next action"
+    },
+    {
+      "id": 5,
+      "slug": "5-support-ticket-router",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "langgraph",
+      "domain": "customer-service",
+      "description": "Classify support tickets by type and urgency, route to the right team, draft first response"
+    },
+    {
+      "id": 6,
+      "slug": "6-resume-screener",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "langgraph",
+      "domain": "hr",
+      "description": "Score resumes against a job spec and surface top candidates with reasoning"
+    },
+    {
+      "id": 7,
+      "slug": "7-rfp-parser",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "langgraph",
+      "domain": "procurement",
+      "description": "Extract requirements, deadlines, and scoring criteria from procurement RFP text"
+    },
+    {
+      "id": 8,
+      "slug": "8-multi-agent-research",
+      "status": "pending",
+      "priority": "low",
+      "framework": "langgraph",
+      "domain": "strategy",
+      "description": "Supervisor agent coordinates a researcher sub-agent and a writer sub-agent to produce a research brief"
+    }
   ]
 }
