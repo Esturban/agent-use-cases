@@ -40,7 +40,7 @@
     {
       "id": 3,
       "slug": "3-invoice-extractor",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "finance",
