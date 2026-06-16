@@ -1,7 +1,21 @@
 {
-  "_description": "Teaching loop queue. Each entry is one real-world agent use case. Pick the next pending item by priority and scaffold it with the 4-phase commit protocol in AGENTS.md.",
-  "_status_values": ["pending", "in-progress", "done", "skipped"],
-  "_priority_values": ["high", "medium", "low"],
+  "_description": "Workbook queue. Each entry is one real-world agent APPLICATION (a reusable target), not a framework tutorial. `harness_focus` names the harness attribute the example is built to demonstrate -- that lens, not the framework, is the lesson. Pick the next pending item by priority and scaffold it with the 4-phase commit protocol in AGENTS.md.",
+  "_status_values": [
+    "pending",
+    "in-progress",
+    "done",
+    "skipped"
+  ],
+  "_priority_values": [
+    "high",
+    "medium",
+    "low"
+  ],
+  "_field_notes": {
+    "domain": "the business area the use case lives in",
+    "harness_focus": "the harness attribute this example isolates (action space, observation shaping, structured output + validation, routing, guardrails, grounding, delegation, ...)",
+    "framework": "advisory default only -- keep examples provider/framework-agnostic (configurable model, no hardcoded vendor in code)"
+  },
   "queue": [
     {
       "id": 1,
@@ -10,15 +24,17 @@
       "priority": "high",
       "framework": "langgraph",
       "domain": "intro",
+      "harness_focus": "action space -- reason -> call tool -> observe loop",
       "description": "Hello world ReAct agent -- model loops through reason-act-observe with math tools"
     },
     {
       "id": 2,
       "slug": "2-email-triage",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "operations",
+      "harness_focus": "schema-constrained output + validation -- urgency/category as a typed result, not free text",
       "description": "Classify inbound emails by urgency and category -- first real-world structured extraction"
     },
     {
@@ -28,6 +44,7 @@
       "priority": "high",
       "framework": "langgraph",
       "domain": "finance",
+      "harness_focus": "structured output + retry on invalid -- Pydantic schema is the contract, model retries until it validates",
       "description": "Extract vendor, amount, date, and line items from invoice text using Pydantic schemas"
     },
     {
@@ -37,6 +54,7 @@
       "priority": "high",
       "framework": "langgraph",
       "domain": "sales",
+      "harness_focus": "rubric in the prompt + grounded reasoning -- score must cite the ICP criteria it used",
       "description": "Score inbound sales leads against ICP criteria and recommend next action"
     },
     {
@@ -46,6 +64,7 @@
       "priority": "medium",
       "framework": "langgraph",
       "domain": "customer-service",
+      "harness_focus": "classification -> conditional routing -> guarded draft reply (absorbs human-in-the-loop)",
       "description": "Classify support tickets by type and urgency, route to the right team, draft first response"
     },
     {
@@ -55,6 +74,7 @@
       "priority": "medium",
       "framework": "langgraph",
       "domain": "hr",
+      "harness_focus": "scoring rubric + comparable structured output across many inputs",
       "description": "Score resumes against a job spec and surface top candidates with reasoning"
     },
     {
@@ -64,6 +84,7 @@
       "priority": "medium",
       "framework": "langgraph",
       "domain": "procurement",
+      "harness_focus": "long-context extraction -- pull a typed requirement list out of a large document",
       "description": "Extract requirements, deadlines, and scoring criteria from procurement RFP text"
     },
     {
@@ -73,6 +94,7 @@
       "priority": "low",
       "framework": "langgraph",
       "domain": "strategy",
+      "harness_focus": "subagent delegation + handoff contracts (absorbs supervisor pattern)",
       "description": "Supervisor agent coordinates a researcher sub-agent and a writer sub-agent to produce a research brief"
     }
   ]
