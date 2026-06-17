@@ -24,18 +24,17 @@ jobs:
           COUNT=$(git log origin/main..HEAD --oneline | wc -l | tr -d ' ')
           LOG=$(git log origin/main..HEAD --oneline --no-decorate | head -30)
           LAST=$(git log -1 --pretty=%s)
-          echo "count=$COUNT" >> $GITHUB_OUTPUT
-          echo "last=$LAST"   >> $GITHUB_OUTPUT
-          echo "log<<EOF"     >> $GITHUB_OUTPUT
-          echo "$LOG"         >> $GITHUB_OUTPUT
-          echo "EOF"          >> $GITHUB_OUTPUT
+          echo "count=$COUNT"  >> $GITHUB_OUTPUT
+          echo "last=$LAST"    >> $GITHUB_OUTPUT
+          echo "log<<EOF"      >> $GITHUB_OUTPUT
+          echo "$LOG"          >> $GITHUB_OUTPUT
+          echo "EOF"           >> $GITHUB_OUTPUT
 
       - name: Create or update PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           EXISTING=$(gh pr list --head dev --base main --json number --jq '.[0].number // empty')
-
           COUNT="${{ steps.meta.outputs.count }}"
           LAST="${{ steps.meta.outputs.last }}"
           LOG="${{ steps.meta.outputs.log }}"
@@ -46,22 +45,13 @@ jobs:
             TITLE="dev -> main ($COUNT commits)"
           fi
 
-          BODY=$(cat <<EOF
-## Changes ($COUNT commit(s))
-
-\`\`\`
-$LOG
-\`\`\`
-
----
-CI runs automatically on this PR. Review and merge when CI is green.
-EOF
-)
+          printf '## Changes (%s commit(s))\n\n```\n%s\n```\n\n---\nCI runs on this PR. Review and merge when CI is green.\n' \
+            "$COUNT" "$LOG" > /tmp/pr_body.md
 
           if [ -z "$EXISTING" ]; then
-            URL=$(gh pr create --base main --head dev --title "$TITLE" --body "$BODY")
+            URL=$(gh pr create --base main --head dev --title "$TITLE" --body-file /tmp/pr_body.md)
             echo "PR created: $URL"
           else
-            gh pr edit "$EXISTING" --title "$TITLE" --body "$BODY"
+            gh pr edit "$EXISTING" --title "$TITLE" --body-file /tmp/pr_body.md
             echo "PR #$EXISTING updated"
           fi
