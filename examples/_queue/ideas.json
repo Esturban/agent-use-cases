@@ -130,7 +130,7 @@
     {
       "id": 12,
       "slug": "12-board-pack-reviewer",
-      "status": "in-progress",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "governance",
