@@ -96,6 +96,156 @@
       "domain": "strategy",
       "harness_focus": "subagent delegation + handoff contracts (absorbs supervisor pattern)",
       "description": "Supervisor agent coordinates a researcher sub-agent and a writer sub-agent to produce a research brief"
+    },
+    {
+      "id": 9,
+      "slug": "9-contract-reviewer",
+      "status": "pending",
+      "priority": "high",
+      "framework": "langgraph",
+      "domain": "legal",
+      "harness_focus": "legal document critique + structured risk register -- every risk finding cites the clause it comes from, no ungrounded assertions",
+      "description": "Review a commercial contract and return a structured analysis: risk clauses by severity, missing protections, negotiation points ranked high-medium-low, and recommended redlines"
+    },
+    {
+      "id": 10,
+      "slug": "10-due-diligence",
+      "status": "pending",
+      "priority": "high",
+      "framework": "langgraph",
+      "domain": "finance",
+      "harness_focus": "multi-document risk extraction + severity matrix -- N documents in, one unified risk register out with likelihood x impact scoring",
+      "description": "Read multiple company documents (financials, contracts, management bio) and produce a commercial due diligence risk register with severity, likelihood, and recommended mitigation per finding"
+    },
+    {
+      "id": 11,
+      "slug": "11-proposal-writer",
+      "status": "pending",
+      "priority": "high",
+      "framework": "langgraph",
+      "domain": "professional-services",
+      "harness_focus": "multi-agent document generation -- supervisor decomposes RFP, specialist agents draft each section, assembler produces a typed Proposal object",
+      "description": "Build a complete RFP response: supervisor parses requirements, specialist agents draft executive summary, approach, team, and commercials sections, assembler returns a structured Proposal object"
+    },
+    {
+      "id": 12,
+      "slug": "12-board-pack-reviewer",
+      "status": "pending",
+      "priority": "high",
+      "framework": "langgraph",
+      "domain": "governance",
+      "harness_focus": "executive critique + structured risk prioritization -- long-context document, output is a director briefing not a raw summary",
+      "description": "Review a board pack and produce a structured director briefing: top risks, information gaps, key decisions required, and suggested questions for management -- framed for a non-executive director"
+    },
+    {
+      "id": 13,
+      "slug": "13-ma-screener",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "langgraph",
+      "domain": "corporate-finance",
+      "harness_focus": "multi-criteria financial scoring rubric + grounded shortlist -- extends lead-qualifier pattern to M&A with strategic fit, financial, and operational criteria",
+      "description": "Score acquisition targets against a defined screening rubric (strategic fit, size, geography, sector) and produce a ranked shortlist with a structured target assessment card per candidate"
+    },
+    {
+      "id": 14,
+      "slug": "14-exec-assistant",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "langgraph",
+      "domain": "operations",
+      "harness_focus": "fan-out output -- one input produces multiple typed output schemas simultaneously (reply draft + action items + follow-up tracker)",
+      "description": "Turn a meeting transcript or email thread into a structured set of outputs: drafted reply, extracted action items with owners and deadlines, and a follow-up tracker entry"
+    },
+    {
+      "id": 15,
+      "slug": "15-regulatory-researcher",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "langgraph",
+      "domain": "regulatory",
+      "harness_focus": "citation-grounded extraction -- every obligation, deadline, and penalty finding must cite the source article or clause, refusal to assert without attribution",
+      "description": "Analyze a regulatory document (financial services, capital markets, or sector-specific) and return a structured compliance summary: obligations, deadlines, penalties, and the exact clause each finding comes from"
+    },
+    {
+      "id": 16,
+      "slug": "16-mgmt-consulting",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "langgraph",
+      "domain": "operations",
+      "harness_focus": "structured diagnosis + 2D effort-impact ranking -- model identifies root causes and must place each recommendation on an effort x impact matrix",
+      "description": "Analyze an operational profile and produce a cost optimization assessment: identified inefficiencies each scored on effort-to-fix vs savings-potential, sorted by quick wins first"
+    },
+    {
+      "id": 17,
+      "slug": "17-corporate-finance",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "langgraph",
+      "domain": "corporate-finance",
+      "harness_focus": "multi-dimension readiness scoring -- model evaluates a company across governance, financials, market, legal, and narrative dimensions with a go/no-go gate per dimension",
+      "description": "Produce a capital raising or IPO readiness assessment: score the company across five readiness dimensions, surface blockers per gate, and produce a prioritized remediation plan"
+    },
+    {
+      "id": 18,
+      "slug": "18-fundraising-agent",
+      "status": "pending",
+      "priority": "low",
+      "framework": "langgraph",
+      "domain": "corporate-finance",
+      "harness_focus": "audience-targeted generation -- same company data produces different structured outputs shaped for different investor personas (VC vs PE vs family office)",
+      "description": "Generate fundraising materials from a company brief: investor thesis, target investor profile per round type, and a structured fundraising timeline -- output structure varies by investor persona"
+    },
+    {
+      "id": 19,
+      "slug": "19-financial-modeller",
+      "status": "pending",
+      "priority": "low",
+      "framework": "langgraph",
+      "domain": "finance",
+      "harness_focus": "code-tool use + numeric output -- agent writes and executes Python to build financial projections, result is a validated numeric model not a text description",
+      "description": "Build a 3-year P&L, balance sheet, and cash flow projection: agent extracts assumptions from a business brief, writes Python to compute the model, validates outputs (net income, FCF, DSCR), and interprets results"
+    },
+    {
+      "id": 20,
+      "slug": "20-strategy-consultant",
+      "status": "pending",
+      "priority": "low",
+      "framework": "langgraph",
+      "domain": "strategy",
+      "harness_focus": "tool-augmented research + structured synthesis -- web search tools feed a structured market analysis output, grounding replaces hallucination",
+      "description": "Conduct a market entry analysis: agent uses web search tools to gather market size, competitor landscape, and regulatory environment, then synthesizes a structured strategy brief with opportunity and risk scoring"
+    },
+    {
+      "id": 21,
+      "slug": "21-client-intel",
+      "status": "pending",
+      "priority": "low",
+      "framework": "langgraph",
+      "domain": "sales",
+      "harness_focus": "multi-source monitoring + structured intelligence brief -- tool-augmented agent consolidates signals from multiple sources into a single typed briefing object",
+      "description": "Monitor a client across news, regulatory filings, and market data using search tools, then produce a structured intelligence brief: funding events, leadership changes, regulatory exposure, and strategic signals"
+    },
+    {
+      "id": 22,
+      "slug": "22-ai-pmo",
+      "status": "pending",
+      "priority": "low",
+      "framework": "langgraph",
+      "domain": "operations",
+      "harness_focus": "stateful entity tracking -- agent maintains a typed project state object and applies incremental updates from unstructured inputs (emails, notes, status calls)",
+      "description": "Parse project update inputs and maintain a structured project state: milestones, risks, blockers, and deliverable owners -- agent applies each new update to the existing typed object and flags new risks"
+    },
+    {
+      "id": 23,
+      "slug": "23-knowledge-mgmt",
+      "status": "pending",
+      "priority": "low",
+      "framework": "langgraph",
+      "domain": "professional-services",
+      "harness_focus": "retrieval-augmented generation -- agent retrieves relevant precedents before drafting, grounding new output in institutional knowledge rather than parametric memory",
+      "description": "Search a corpus of past proposals and engagement reports to surface relevant precedents, then synthesize a structured knowledge brief that grounds and cites prior work when drafting new proposals"
     }
   ]
 }
