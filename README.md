@@ -1,6 +1,6 @@
 # agent-use-cases
 
-Twelve production-style agent examples, each isolating one pattern from the agent harness.
+Eighteen production-style agent examples, each isolating one pattern from the agent harness.
 Every example is a self-contained folder: `schema` → `workflow` → `main` → Colab workbook.
 
 **Patterns covered:**
@@ -15,6 +15,12 @@ Every example is a self-contained folder: `schema` → `workflow` → `main` →
 - **Multi-document synthesis** — per-document extraction feeds a unified risk register
 - **Multi-agent document generation** — supervisor decomposes brief, writer drafts full response
 - **Executive critique** — NED-framed output identifies gaps and probing questions
+- **Multi-criteria scoring** — nested dimension scores with threshold gating produce a ranked shortlist
+- **Fan-out output** — one input simultaneously produces multiple typed schemas (reply + actions + follow-ups)
+- **Citation-grounded regulation** — every obligation and penalty cites its source article
+- **2D effort-impact matrix** — recommendations placed in quadrants and sorted by ROI
+- **Dimensional gate logic** — go/no-go per dimension, overall status blocked by any single fail
+- **Audience-targeted generation** — same company brief produces persona-specific outputs for VC, PE, and family office
 
 ---
 
@@ -52,6 +58,12 @@ Or open any workbook directly in Colab — no local setup needed.
 | 10 | [10-due-diligence](./examples/10-due-diligence/README.md) | Multi-document risk extraction + severity x likelihood matrix | Finance, M&A, Legal | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/10-due-diligence/due_diligence_workbook.ipynb) |
 | 11 | [11-proposal-writer](./examples/11-proposal-writer/README.md) | Multi-agent document generation — supervisor + writer typed handoff | Sales, Business Development, Consulting | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/11-proposal-writer/proposal_writer_workbook.ipynb) |
 | 12 | [12-board-pack-reviewer](./examples/12-board-pack-reviewer/README.md) | Executive critique — NED-framed output, information gaps, probing questions | Governance, Board, Finance | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/12-board-pack-reviewer/board_pack_workbook.ipynb) |
+| 13 | [13-ma-screener](./examples/13-ma-screener/README.md) | Multi-criteria M&A scoring — DimensionScore nested model, threshold gating, ranked shortlist | Corporate Finance, M&A, Strategy | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/13-ma-screener/ma_screener_workbook.ipynb) |
+| 14 | [14-exec-assistant](./examples/14-exec-assistant/README.md) | Fan-out output — one input → draft reply + action items + follow-up tracker simultaneously | Operations, Executive Office | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/14-exec-assistant/exec_assistant_workbook.ipynb) |
+| 15 | [15-regulatory-researcher](./examples/15-regulatory-researcher/README.md) | Citation-grounded regulation — every obligation and penalty must cite its source article | Compliance, Legal, Risk | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/15-regulatory-researcher/regulatory_researcher_workbook.ipynb) |
+| 16 | [16-mgmt-consulting](./examples/16-mgmt-consulting/README.md) | 2D effort-impact matrix — quadrant-typed recommendations sorted quick wins first | Operations, Finance, Consulting | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/16-mgmt-consulting/mgmt_consulting_workbook.ipynb) |
+| 17 | [17-corporate-finance](./examples/17-corporate-finance/README.md) | Dimensional gate logic — pass/conditional/fail per dimension, any fail blocks overall status | Corporate Finance, CFO, Board | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/17-corporate-finance/corporate_finance_workbook.ipynb) |
+| 18 | [18-fundraising-agent](./examples/18-fundraising-agent/README.md) | Audience-targeted generation — same brief → persona-specific materials for VC, PE, family office | Corporate Finance, Investor Relations | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/18-fundraising-agent/fundraising_agent_workbook.ipynb) |
 
 </details>
 
@@ -64,7 +76,7 @@ examples/
   1-basic-react-agent/
   2-email-triage/
   ...
-  12-board-pack-reviewer/
+  18-fundraising-agent/
     src/schema.py      # Pydantic models
     src/workflow.py    # agent logic
     main.py            # runnable entry point
