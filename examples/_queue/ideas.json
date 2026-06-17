@@ -140,7 +140,7 @@
     {
       "id": 13,
       "slug": "13-ma-screener",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "langgraph",
       "domain": "corporate-finance",
@@ -150,7 +150,7 @@
     {
       "id": 14,
       "slug": "14-exec-assistant",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "langgraph",
       "domain": "operations",
@@ -160,7 +160,7 @@
     {
       "id": 15,
       "slug": "15-regulatory-researcher",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "langgraph",
       "domain": "regulatory",
@@ -170,7 +170,7 @@
     {
       "id": 16,
       "slug": "16-mgmt-consulting",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "langgraph",
       "domain": "operations",
@@ -180,7 +180,7 @@
     {
       "id": 17,
       "slug": "17-corporate-finance",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "langgraph",
       "domain": "corporate-finance",
@@ -190,7 +190,7 @@
     {
       "id": 18,
       "slug": "18-fundraising-agent",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "langgraph",
       "domain": "corporate-finance",
