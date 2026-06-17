@@ -110,7 +110,7 @@
     {
       "id": 10,
       "slug": "10-due-diligence",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "finance",
