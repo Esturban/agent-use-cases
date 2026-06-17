@@ -120,7 +120,7 @@
     {
       "id": 11,
       "slug": "11-proposal-writer",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "professional-services",
@@ -130,7 +130,7 @@
     {
       "id": 12,
       "slug": "12-board-pack-reviewer",
-      "status": "pending",
+      "status": "in-progress",
       "priority": "high",
       "framework": "langgraph",
       "domain": "governance",
