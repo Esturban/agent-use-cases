@@ -18,21 +18,45 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build PR body from recent commits
-        id: body
+      - name: Gather commit log since main
+        id: meta
         run: |
-          LOG=$(git log origin/main..HEAD --oneline --no-decorate | head -20)
-          echo "log<<EOF" >> $GITHUB_OUTPUT
-          echo "$LOG" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          COUNT=$(git log origin/main..HEAD --oneline | wc -l | tr -d ' ')
+          LOG=$(git log origin/main..HEAD --oneline --no-decorate | head -30)
+          LAST=$(git log -1 --pretty=%s)
+          echo "count=$COUNT" >> $GITHUB_OUTPUT
+          echo "last=$LAST"   >> $GITHUB_OUTPUT
+          echo "log<<EOF"     >> $GITHUB_OUTPUT
+          echo "$LOG"         >> $GITHUB_OUTPUT
+          echo "EOF"          >> $GITHUB_OUTPUT
 
       - name: Create or update PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           EXISTING=$(gh pr list --head dev --base main --json number --jq '.[0].number // empty')
-          TITLE="feat: $(git log -1 --pretty=%s)"
-          BODY=$(printf "## What changed\n\n\`\`\`\n%s\n\`\`\`\n\n---\n👋 Review and merge when ready." "${{ steps.body.outputs.log }}")
+
+          COUNT="${{ steps.meta.outputs.count }}"
+          LAST="${{ steps.meta.outputs.last }}"
+          LOG="${{ steps.meta.outputs.log }}"
+
+          if [ "$COUNT" -eq 1 ]; then
+            TITLE="$LAST"
+          else
+            TITLE="dev -> main ($COUNT commits)"
+          fi
+
+          BODY=$(cat <<EOF
+## Changes ($COUNT commit(s))
+
+\`\`\`
+$LOG
+\`\`\`
+
+---
+CI runs automatically on this PR. Review and merge when CI is green.
+EOF
+)
 
           if [ -z "$EXISTING" ]; then
             URL=$(gh pr create --base main --head dev --title "$TITLE" --body "$BODY")
