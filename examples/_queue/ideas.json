@@ -246,6 +246,46 @@
       "domain": "professional-services",
       "harness_focus": "retrieval-augmented generation -- agent retrieves relevant precedents before drafting, grounding new output in institutional knowledge rather than parametric memory",
       "description": "Search a corpus of past proposals and engagement reports to surface relevant precedents, then synthesize a structured knowledge brief that grounds and cites prior work when drafting new proposals"
+    },
+    {
+      "id": 24,
+      "slug": "24-anthropic-structured-output",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "anthropic-sdk",
+      "domain": "operations",
+      "harness_focus": "structured output via raw SDK -- same pattern as example 2 but using the Anthropic Python SDK directly (no LangChain), showing the pattern is framework-agnostic",
+      "description": "Replicate the email triage pattern using the Anthropic Python SDK and claude-haiku-4-5: show how to prompt for JSON, parse with Pydantic, and handle validation errors -- no LangChain wrapper required"
+    },
+    {
+      "id": 25,
+      "slug": "25-openai-function-calling",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "openai-sdk",
+      "domain": "sales",
+      "harness_focus": "native function calling -- OpenAI tool_choice=required forces the model to populate a typed schema; shows how tool-use and structured output converge at the API level",
+      "description": "Build a lead scorer using the OpenAI Python SDK directly with function-calling: define a scoring function as a tool schema, force the model to call it, and parse the result -- no orchestration framework"
+    },
+    {
+      "id": 26,
+      "slug": "26-pydantic-ai-agent",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "pydantic-ai",
+      "domain": "finance",
+      "harness_focus": "schema-first agent framework -- PydanticAI wraps the model call in a typed agent whose output and tool signatures are defined entirely in Pydantic; contrast with LangChain's runnable approach",
+      "description": "Build an invoice extractor using PydanticAI: define tools and output model as Pydantic types, let the framework handle retry and validation -- show how schema-first frameworks differ from chain-first frameworks"
+    },
+    {
+      "id": 27,
+      "slug": "27-framework-agnostic-react",
+      "status": "pending",
+      "priority": "low",
+      "framework": "none",
+      "domain": "intro",
+      "harness_focus": "ReAct loop from scratch -- implement reason-act-observe in pure Python with no framework; shows what orchestrators abstract away and when you might not need one",
+      "description": "Implement a minimal ReAct loop from scratch using only the OpenAI Python SDK: manual message history, tool dispatch dict, and a while loop -- the entire agent in under 80 lines to show what LangGraph handles for you"
     }
   ]
 }
