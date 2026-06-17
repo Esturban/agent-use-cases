@@ -249,23 +249,23 @@
     },
     {
       "id": 24,
-      "slug": "24-anthropic-structured-output",
-      "status": "pending",
-      "priority": "medium",
-      "framework": "anthropic-sdk",
-      "domain": "operations",
-      "harness_focus": "structured output via raw SDK -- same pattern as example 2 but using the Anthropic Python SDK directly (no LangChain), showing the pattern is framework-agnostic",
-      "description": "Replicate the email triage pattern using the Anthropic Python SDK and claude-haiku-4-5: show how to prompt for JSON, parse with Pydantic, and handle validation errors -- no LangChain wrapper required"
-    },
-    {
-      "id": 25,
-      "slug": "25-openai-function-calling",
+      "slug": "24-openrouter-structured-output",
       "status": "pending",
       "priority": "medium",
       "framework": "openai-sdk",
-      "domain": "sales",
-      "harness_focus": "native function calling -- OpenAI tool_choice=required forces the model to populate a typed schema; shows how tool-use and structured output converge at the API level",
-      "description": "Build a lead scorer using the OpenAI Python SDK directly with function-calling: define a scoring function as a tool schema, force the model to call it, and parse the result -- no orchestration framework"
+      "domain": "operations",
+      "harness_focus": "provider-agnostic structured output -- OpenRouter unified API with the openai SDK; swap model string to change provider, pattern stays identical, making the harness independent of any single LLM vendor",
+      "description": "Replicate the email triage pattern using OpenRouter (OPENROUTER_API_KEY) and the openai SDK pointed at openrouter.ai/api/v1: show how the structured output pattern is provider-agnostic -- same Pydantic schema, same parse logic, any model"
+    },
+    {
+      "id": 25,
+      "slug": "25-openrouter-react-agent",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "openai-sdk",
+      "domain": "intro",
+      "harness_focus": "provider-agnostic ReAct from scratch -- manual message loop, tool dispatch dict, OpenRouter as the backend; shows what orchestrators abstract away and that the loop itself is framework-independent",
+      "description": "Implement a minimal ReAct loop from scratch using only the openai SDK + OpenRouter: message history list, tool dispatch dict, while loop, 80 lines total -- replicate example 1 without LangGraph to show what the framework buys you"
     },
     {
       "id": 26,
@@ -274,18 +274,18 @@
       "priority": "medium",
       "framework": "pydantic-ai",
       "domain": "finance",
-      "harness_focus": "schema-first agent framework -- PydanticAI wraps the model call in a typed agent whose output and tool signatures are defined entirely in Pydantic; contrast with LangChain's runnable approach",
+      "harness_focus": "schema-first agent framework -- PydanticAI wraps the model call in a typed agent whose output and tool signatures are defined entirely in Pydantic; contrast with LangChain LCEL chain approach",
       "description": "Build an invoice extractor using PydanticAI: define tools and output model as Pydantic types, let the framework handle retry and validation -- show how schema-first frameworks differ from chain-first frameworks"
     },
     {
       "id": 27,
-      "slug": "27-framework-agnostic-react",
+      "slug": "27-multi-provider-fan-out",
       "status": "pending",
       "priority": "low",
-      "framework": "none",
-      "domain": "intro",
-      "harness_focus": "ReAct loop from scratch -- implement reason-act-observe in pure Python with no framework; shows what orchestrators abstract away and when you might not need one",
-      "description": "Implement a minimal ReAct loop from scratch using only the OpenAI Python SDK: manual message history, tool dispatch dict, and a while loop -- the entire agent in under 80 lines to show what LangGraph handles for you"
+      "framework": "openai-sdk",
+      "domain": "strategy",
+      "harness_focus": "multi-provider comparison via OpenRouter -- same prompt sent to multiple models in parallel, responses structured into a typed comparison object; shows provider-agnostic orchestration and output normalisation",
+      "description": "Send the same market brief to three different models via OpenRouter in parallel (e.g. llama-3, mistral, claude-haiku), collect structured StrategicOpinion objects from each, and synthesise into a ModelConsensus -- shows provider diversity without vendor lock-in"
     }
   ]
 }
