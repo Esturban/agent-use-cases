@@ -100,7 +100,7 @@
     {
       "id": 9,
       "slug": "9-contract-reviewer",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "legal",
