@@ -100,7 +100,7 @@
     {
       "id": 9,
       "slug": "9-contract-reviewer",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "legal",
@@ -110,7 +110,7 @@
     {
       "id": 10,
       "slug": "10-due-diligence",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "finance",
@@ -120,7 +120,7 @@
     {
       "id": 11,
       "slug": "11-proposal-writer",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "professional-services",
@@ -130,7 +130,7 @@
     {
       "id": 12,
       "slug": "12-board-pack-reviewer",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "governance",
@@ -140,7 +140,7 @@
     {
       "id": 13,
       "slug": "13-ma-screener",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "langgraph",
       "domain": "corporate-finance",
@@ -150,7 +150,7 @@
     {
       "id": 14,
       "slug": "14-exec-assistant",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "langgraph",
       "domain": "operations",
@@ -160,7 +160,7 @@
     {
       "id": 15,
       "slug": "15-regulatory-researcher",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "langgraph",
       "domain": "regulatory",
@@ -170,7 +170,7 @@
     {
       "id": 16,
       "slug": "16-mgmt-consulting",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "langgraph",
       "domain": "operations",
@@ -180,7 +180,7 @@
     {
       "id": 17,
       "slug": "17-corporate-finance",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "langgraph",
       "domain": "corporate-finance",
@@ -190,7 +190,7 @@
     {
       "id": 18,
       "slug": "18-fundraising-agent",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "langgraph",
       "domain": "corporate-finance",
@@ -246,6 +246,46 @@
       "domain": "professional-services",
       "harness_focus": "retrieval-augmented generation -- agent retrieves relevant precedents before drafting, grounding new output in institutional knowledge rather than parametric memory",
       "description": "Search a corpus of past proposals and engagement reports to surface relevant precedents, then synthesize a structured knowledge brief that grounds and cites prior work when drafting new proposals"
+    },
+    {
+      "id": 24,
+      "slug": "24-openrouter-structured-output",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "openai-sdk",
+      "domain": "operations",
+      "harness_focus": "provider-agnostic structured output -- OpenRouter unified API with the openai SDK; swap model string to change provider, pattern stays identical, making the harness independent of any single LLM vendor",
+      "description": "Replicate the email triage pattern using OpenRouter (OPENROUTER_API_KEY) and the openai SDK pointed at openrouter.ai/api/v1: show how the structured output pattern is provider-agnostic -- same Pydantic schema, same parse logic, any model"
+    },
+    {
+      "id": 25,
+      "slug": "25-openrouter-react-agent",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "openai-sdk",
+      "domain": "intro",
+      "harness_focus": "provider-agnostic ReAct from scratch -- manual message loop, tool dispatch dict, OpenRouter as the backend; shows what orchestrators abstract away and that the loop itself is framework-independent",
+      "description": "Implement a minimal ReAct loop from scratch using only the openai SDK + OpenRouter: message history list, tool dispatch dict, while loop, 80 lines total -- replicate example 1 without LangGraph to show what the framework buys you"
+    },
+    {
+      "id": 26,
+      "slug": "26-pydantic-ai-agent",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "pydantic-ai",
+      "domain": "finance",
+      "harness_focus": "schema-first agent framework -- PydanticAI wraps the model call in a typed agent whose output and tool signatures are defined entirely in Pydantic; contrast with LangChain LCEL chain approach",
+      "description": "Build an invoice extractor using PydanticAI: define tools and output model as Pydantic types, let the framework handle retry and validation -- show how schema-first frameworks differ from chain-first frameworks"
+    },
+    {
+      "id": 27,
+      "slug": "27-multi-provider-fan-out",
+      "status": "pending",
+      "priority": "low",
+      "framework": "openai-sdk",
+      "domain": "strategy",
+      "harness_focus": "multi-provider comparison via OpenRouter -- same prompt sent to multiple models in parallel, responses structured into a typed comparison object; shows provider-agnostic orchestration and output normalisation",
+      "description": "Send the same market brief to three different models via OpenRouter in parallel (e.g. llama-3, mistral, claude-haiku), collect structured StrategicOpinion objects from each, and synthesise into a ModelConsensus -- shows provider diversity without vendor lock-in"
     }
   ]
 }
