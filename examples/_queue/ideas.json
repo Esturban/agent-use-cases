@@ -240,7 +240,7 @@
     {
       "id": 23,
       "slug": "23-knowledge-mgmt",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "langgraph",
       "domain": "professional-services",
