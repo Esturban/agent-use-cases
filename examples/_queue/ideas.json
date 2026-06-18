@@ -220,7 +220,7 @@
     {
       "id": 21,
       "slug": "21-client-intel",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "langgraph",
       "domain": "sales",
