@@ -230,7 +230,7 @@
     {
       "id": 22,
       "slug": "22-ai-pmo",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "langgraph",
       "domain": "operations",
