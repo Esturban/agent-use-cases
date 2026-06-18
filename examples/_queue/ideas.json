@@ -280,7 +280,7 @@
     {
       "id": 27,
       "slug": "27-multi-provider-fan-out",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "openai-sdk",
       "domain": "strategy",
