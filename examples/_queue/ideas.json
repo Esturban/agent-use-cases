@@ -200,7 +200,7 @@
     {
       "id": 19,
       "slug": "19-financial-modeller",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "langgraph",
       "domain": "finance",
@@ -210,7 +210,7 @@
     {
       "id": 20,
       "slug": "20-strategy-consultant",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "langgraph",
       "domain": "strategy",
@@ -220,7 +220,7 @@
     {
       "id": 21,
       "slug": "21-client-intel",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "langgraph",
       "domain": "sales",
@@ -230,7 +230,7 @@
     {
       "id": 22,
       "slug": "22-ai-pmo",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "langgraph",
       "domain": "operations",
@@ -240,7 +240,7 @@
     {
       "id": 23,
       "slug": "23-knowledge-mgmt",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "langgraph",
       "domain": "professional-services",
@@ -250,7 +250,7 @@
     {
       "id": 24,
       "slug": "24-openrouter-structured-output",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "openai-sdk",
       "domain": "operations",
@@ -260,7 +260,7 @@
     {
       "id": 25,
       "slug": "25-openrouter-react-agent",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "openai-sdk",
       "domain": "intro",
@@ -270,7 +270,7 @@
     {
       "id": 26,
       "slug": "26-pydantic-ai-agent",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "pydantic-ai",
       "domain": "finance",
@@ -280,7 +280,7 @@
     {
       "id": 27,
       "slug": "27-multi-provider-fan-out",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "openai-sdk",
       "domain": "strategy",
