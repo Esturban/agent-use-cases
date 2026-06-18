@@ -260,7 +260,7 @@
     {
       "id": 25,
       "slug": "25-openrouter-react-agent",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "openai-sdk",
       "domain": "intro",
