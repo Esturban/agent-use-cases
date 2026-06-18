@@ -210,7 +210,7 @@
     {
       "id": 20,
       "slug": "20-strategy-consultant",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "langgraph",
       "domain": "strategy",
