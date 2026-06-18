@@ -250,7 +250,7 @@
     {
       "id": 24,
       "slug": "24-openrouter-structured-output",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "openai-sdk",
       "domain": "operations",
