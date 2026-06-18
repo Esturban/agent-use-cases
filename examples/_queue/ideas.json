@@ -270,7 +270,7 @@
     {
       "id": 26,
       "slug": "26-pydantic-ai-agent",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "pydantic-ai",
       "domain": "finance",
