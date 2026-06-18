@@ -23,6 +23,37 @@ The tools use mock data here, but the pattern is identical whether you point the
 
 ---
 
+## What you'll see
+
+```
+============================================================
+Market: B2B SaaS Europe
+============================================================
+TAM:          $187.4B
+Growth:       14.2% / year
+Verdict:      ENTER
+Rationale:    The European B2B SaaS market is growing faster than North America,
+              with a fragmented competitor landscape leaving room for a focused
+              entrant. Regulatory overhead is manageable for a compliant-by-design
+              product.
+
+Competitors (4):
+  Salesforce               31% share
+  SAP                      22% share
+  HubSpot                  11% share
+  Pipedrive                 6% share
+
+Opportunities & Risks (6):
+  [+] 9/10  GDPR-compliant positioning is a genuine wedge vs US-headquartered incumbents
+  [+] 8/10  SMB segment is underserved — incumbents focus on enterprise
+  [-] 7/10  Long sales cycles and procurement bureaucracy in German and French markets
+  [+] 6/10  EUR weakness vs USD lowers effective price for local buyers
+  [-] 5/10  High customer acquisition cost due to language and market fragmentation
+  [-] 4/10  Incumbent lock-in through ERP integrations is hard to displace
+```
+
+---
+
 ## How to run
 
 ```bash

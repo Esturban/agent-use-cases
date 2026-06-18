@@ -30,6 +30,23 @@ lead description (human message)
   score  tier  criteria_met  criteria_missed  reasoning
 ```
 
+### What you'll see
+
+```
+Company:  Meridian Payments
+Score:    8/10  →  HOT
+Action:   Schedule a demo this week — strong ICP fit, active buying signal, Q3 deadline creates urgency
+
+Criteria met:    B2B SaaS buyer, $2k–4k/month budget matches pricing tier, 100–500 employees, ops pain with clear ROI, decision-maker engaged
+Criteria missed: No existing contract to displace
+
+Reasoning: Meridian Payments clears five of six ICP criteria. The manual reconciliation
+problem (15 hrs/week) is a quantified pain point, budget is in range, and Sarah Chen
+(VP of Operations) is both the economic buyer and the daily user. The only gap is the
+absence of a legacy contract to displace, which lowers displacement risk rather than fit.
+Recommend fast-track to demo before Q3 planning locks.
+```
+
 ### Schema
 
 ```
