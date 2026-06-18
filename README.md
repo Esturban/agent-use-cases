@@ -21,6 +21,15 @@ Every example is a self-contained folder: `schema` → `workflow` → `main` →
 - **2D effort-impact matrix** — recommendations placed in quadrants and sorted by ROI
 - **Dimensional gate logic** — go/no-go per dimension, overall status blocked by any single fail
 - **Audience-targeted generation** — same company brief produces persona-specific outputs for VC, PE, and family office
+- **Provider-agnostic structured output** — OpenRouter + openai SDK; swap the model string, the harness stays identical
+- **Manual ReAct loop** — reason-act-observe without a framework; shows what orchestrators abstract away
+- **Schema-first agent framework** — PydanticAI; types define tools and output contract before any logic is written
+- **Code-tool use** — agent writes and executes Python to produce numeric results, not prose
+- **Tool-augmented research** — web search feeds structured synthesis; grounding replaces hallucination
+- **Multi-source intelligence** — multiple search tools consolidate into a single typed briefing object
+- **Stateful entity tracking** — agent applies incremental updates from unstructured inputs to a typed project state
+- **Retrieval-augmented generation** — past documents retrieved before drafting; output cites prior work
+- **Multi-provider fan-out** — same prompt sent to N models in parallel; responses normalised into a typed consensus
 
 ---
 
@@ -64,6 +73,7 @@ Or open any workbook directly in Colab — no local setup needed.
 | 16 | [16-mgmt-consulting](./examples/16-mgmt-consulting/README.md) | 2D effort-impact matrix — quadrant-typed recommendations sorted quick wins first | Operations, Finance, Consulting | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/16-mgmt-consulting/mgmt_consulting_workbook.ipynb) |
 | 17 | [17-corporate-finance](./examples/17-corporate-finance/README.md) | Dimensional gate logic — pass/conditional/fail per dimension, any fail blocks overall status | Corporate Finance, CFO, Board | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/17-corporate-finance/corporate_finance_workbook.ipynb) |
 | 18 | [18-fundraising-agent](./examples/18-fundraising-agent/README.md) | Audience-targeted generation — same brief → persona-specific materials for VC, PE, family office | Corporate Finance, Investor Relations | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/18-fundraising-agent/fundraising_agent_workbook.ipynb) |
+| 24 | [24-openrouter-structured-output](./examples/24-openrouter-structured-output/README.md) | Provider-agnostic structured output — same Pydantic schema, any OpenRouter model string | Operations, Engineering | `OPENROUTER_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/24-openrouter-structured-output/openrouter_structured_output_workbook.ipynb) |
 
 </details>
 
