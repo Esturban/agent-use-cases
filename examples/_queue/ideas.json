@@ -200,7 +200,7 @@
     {
       "id": 19,
       "slug": "19-financial-modeller",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "langgraph",
       "domain": "finance",
