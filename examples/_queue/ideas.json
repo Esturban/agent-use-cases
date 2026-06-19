@@ -290,7 +290,7 @@
     {
       "id": 28,
       "slug": "28-dependency-vuln-scanner",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "openai-sdk",
       "domain": "it-devops",
