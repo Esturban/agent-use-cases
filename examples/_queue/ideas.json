@@ -286,6 +286,111 @@
       "domain": "strategy",
       "harness_focus": "multi-provider comparison via OpenRouter -- same prompt sent to multiple models in parallel, responses structured into a typed comparison object; shows provider-agnostic orchestration and output normalisation",
       "description": "Send the same market brief to three different models via OpenRouter in parallel (e.g. llama-3, mistral, claude-haiku), collect structured StrategicOpinion objects from each, and synthesise into a ModelConsensus -- shows provider diversity without vendor lock-in"
+    },
+    {
+      "id": 28,
+      "slug": "28-dependency-vuln-scanner",
+      "status": "done",
+      "priority": "high",
+      "framework": "openai-sdk",
+      "domain": "it-devops",
+      "harness_focus": "real public API tool use + risk scoring -- agent calls OSV.dev (no key required) to fetch known CVEs for each dependency, ranks findings by severity, structured output",
+      "description": "Read a requirements.txt or package.json, call the OSV.dev open vulnerability database for each package, and return a structured risk report ranked by severity -- no API key needed, real data every run",
+      "free_api": "OSV.dev (Google Open Source Vulnerability DB -- no key required)"
+    },
+    {
+      "id": 29,
+      "slug": "29-sec-esg-extractor",
+      "status": "done",
+      "priority": "high",
+      "framework": "langgraph",
+      "domain": "esg",
+      "harness_focus": "real public API + document chunking + rubric-based evaluation -- fetches live 10-K filings from SEC EDGAR, extracts ESG disclosures, scores against CSRD categories with citation grounding",
+      "description": "Fetch a company's 10-K filing from SEC EDGAR (no key required), extract ESG-related disclosures, and score them against CSRD reporting categories -- every finding cites the source section",
+      "free_api": "SEC EDGAR full-text search API (no key required)"
+    },
+    {
+      "id": 30,
+      "slug": "30-supplier-risk-scorer",
+      "status": "done",
+      "priority": "high",
+      "framework": "langgraph",
+      "domain": "supply-chain",
+      "harness_focus": "multi-source data fusion + structured scoring -- agent calls World Bank Governance Indicators API (no key) for each supplier country, fuses results into a geopolitical risk scorecard",
+      "description": "Score a supplier list by geopolitical risk -- agent fetches World Bank governance indicators per country, weighs them against a risk rubric, and returns a ranked supplier risk register",
+      "free_api": "World Bank Open Data API (no key required)"
+    },
+    {
+      "id": 31,
+      "slug": "31-news-sentiment-monitor",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "openai-sdk",
+      "domain": "marketing",
+      "harness_focus": "real API integration + sentiment classification + stateful delta tracking -- pulls live headlines via NewsAPI free tier, classifies sentiment per article, tracks week-over-week delta",
+      "description": "Pull recent headlines for a brand or competitor from NewsAPI, run per-article sentiment scoring, and produce a structured weekly digest with trend direction and notable shifts",
+      "free_api": "NewsAPI free tier (100 req/day, API key from newsapi.org)"
+    },
+    {
+      "id": 32,
+      "slug": "32-onboarding-orchestrator",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "langgraph",
+      "domain": "hr",
+      "harness_focus": "multi-agent fan-out + result aggregation -- supervisor splits a new-hire checklist across IT, HR, and Facilities sub-agents; each resolves their queue and reports back a typed completion status",
+      "description": "Turn a new-hire start date and role into a parallel onboarding plan -- supervisor delegates IT provisioning, HR paperwork, and Facilities setup to specialist sub-agents and aggregates their typed responses into a day-1 readiness report"
+    },
+    {
+      "id": 33,
+      "slug": "33-churn-signal-router",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "langgraph",
+      "domain": "customer-success",
+      "harness_focus": "classifier router + conditional downstream logic -- NPS response classified into retain/neutral/escalate; each branch runs different follow-up logic and drafts a different typed reply",
+      "description": "Read a batch of NPS survey responses, classify each into a retention, neutral, or escalation queue, and draft a personalised follow-up response per segment -- same pattern as support ticket router but applied to customer success signals"
+    },
+    {
+      "id": 34,
+      "slug": "34-clinical-trial-finder",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "openai-sdk",
+      "domain": "healthcare-admin",
+      "harness_focus": "real public API + structured output + filtering logic -- queries Open FDA clinical trials endpoint with patient criteria, filters on eligibility, returns ranked matches with plain-language eligibility summary",
+      "description": "Take a patient condition and basic eligibility criteria, query the Open FDA clinical trials API (no key), filter and rank matching trials, and return a structured brief with eligibility summary per match",
+      "free_api": "Open FDA API (no key required)"
+    },
+    {
+      "id": 35,
+      "slug": "35-board-memo-synthesizer",
+      "status": "pending",
+      "priority": "low",
+      "framework": "langgraph",
+      "domain": "executive",
+      "harness_focus": "multi-perspective fan-out + synthesis -- three specialist sub-agents each read the same analyst reports from a bull, bear, and risk lens; synthesis agent produces a concise one-page board memo citing all three",
+      "description": "Fan out three analyst reports to bull, bear, and risk sub-agents in parallel; each produces a typed opinion; synthesis agent combines them into a structured one-page board memo with a recommended position"
+    },
+    {
+      "id": 36,
+      "slug": "36-incident-postmortem-drafter",
+      "status": "pending",
+      "priority": "low",
+      "framework": "openai-sdk",
+      "domain": "it-devops",
+      "harness_focus": "tool use (log parser) + structured document generation -- agent calls a log-parsing tool to extract timeline and affected services, then generates a complete postmortem doc with root cause, timeline, and action items",
+      "description": "Feed a raw incident timeline log to a tool-calling agent; it parses the log, extracts root cause and affected services, and drafts a complete postmortem document with timeline and prevention actions"
+    },
+    {
+      "id": 37,
+      "slug": "37-campaign-brief-fan-out",
+      "status": "pending",
+      "priority": "low",
+      "framework": "langgraph",
+      "domain": "marketing",
+      "harness_focus": "parallel specialist fan-out -- one campaign brief fans out simultaneously to email copy, social captions, and blog outline sub-agents; results assembled into a typed multi-channel content pack",
+      "description": "Turn one campaign brief into a full content pack -- fan out in parallel to specialist agents for email copy, social captions, and a blog post outline; assemble all three into a single typed ContentPack object"
     }
   ]
 }

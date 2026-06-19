@@ -1,56 +1,79 @@
-# 14-exec-assistant
+# 14 — Executive Assistant
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/14-exec-assistant/exec_assistant_workbook.ipynb)
 
-An agent that reads an email thread or meeting transcript and produces three
-typed outputs simultaneously: a draft reply, a list of action items with owners
-and deadlines, and a follow-up tracker -- all in a single structured call.
+Turns a messy email thread or meeting transcript into a ready-to-send reply, a prioritised task list, and a follow-up tracker — all in one pass. Built for chiefs of staff, EAs, and anyone who manages high-volume correspondence.
 
-## Harness focus
+---
 
-**Fan-out output -- one input produces multiple typed schemas simultaneously**
+## What it does
 
-A single LLM call returns one Pydantic model that contains three distinct typed
-sub-structures. The model is constrained to populate all three even when the input
-is thin -- if there is nothing substantive to reply to, it drafts an acknowledgement.
-This pattern replaces three separate prompts with one typed, composable call.
+A raw email thread or meeting transcript goes in. The agent reads it, drafts a polished reply, extracts every action item with an owner, deadline, and priority level, and builds a follow-up tracker for anything that needs monitoring but isn't a direct task yet. All three outputs come back together in a single call — no separate prompts, no stitching results together manually.
+
+---
+
+## How it works
+
+The agent is given a system prompt that forbids empty lists — if the input is thin, it drafts an acknowledgement rather than returning nothing. It detects whether the input is an email thread or a meeting transcript and adjusts its output accordingly: email threads get a suggested subject line, transcripts get a brief summary. Each action item is tagged with a priority (high, medium, or low) and an owner where one can be identified. Follow-up entries capture what is being waited on and when to chase if there is no update.
+
+---
+
+## What you'll see
 
 ```
-Email thread or meeting transcript
-              |
-              v
-    [Executive Assistant]
-              |
-              v
-         ExecOutput
-           |-- input_type        (email_thread | meeting_transcript)
-           |-- draft_reply       (polished, ready-to-send)
-           |-- subject_line      (email inputs only)
-           |-- action_items[]
-           |     |-- description
-           |     |-- owner
-           |     |-- due_date
-           |     |-- priority    (high | medium | low)
-           |-- follow_up_tracker[]
-           |     |-- topic
-           |     |-- waiting_on
-           |     |-- check_in_by
-           |     |-- notes
-           |-- meeting_summary   (transcript inputs only)
+=================================================================
+EXEC ASSISTANT OUTPUT | Type: email_thread
+=================================================================
+
+Subject: RE: API Integration Deadline — Action Plan and Next Steps
+
+DRAFT REPLY:
+James and Sarah,
+
+Thank you both for the quick responses. To align on next steps:
+James will restart integration work by Wednesday 18 June with a
+revised delivery target of 9 July 2025. Legal to confirm SLA
+exposure by EOD Tuesday. I'd like us on a call Wednesday to lock
+in the Vendor X communication approach.
+
+David
+
+ACTION ITEMS (4):
+  1. [HIGH] Legal to advise on SLA exposure and fee rebate risk
+     Owner: Legal | Due: Tuesday 17 Jun EOD
+  2. [HIGH] Engineering to restart API integration with Vendor X
+     Owner: James Reed | Due: Wednesday 18 Jun
+  3. [MEDIUM] Schedule alignment call with Vendor X on revised timeline
+     Owner: Sarah Connor | Due: Friday 20 Jun
+  4. [MEDIUM] CEO update call with James and Sarah
+     Owner: David Okafor | Due: Wednesday 18 Jun
+
+FOLLOW-UP TRACKER (2):
+  - SLA exposure assessment
+    Waiting on: Legal | Check in by: Tuesday 17 Jun
+    Notes: 5% monthly rebate per week of delay — quantify total exposure
+  - Vendor X revised timeline agreement
+    Waiting on: Sarah Connor | Check in by: Friday 20 Jun
+    Notes: Agree new date before any formal written notification
 ```
 
-**Keys:** `OPENAI_API_KEY`
+---
+
+## How to run
 
 ```bash
+# Requires OPENAI_API_KEY in .env
 python examples/14-exec-assistant/main.py
 ```
 
-## Key concepts
+---
 
-| Concept | Where |
-|---------|-------|
-| Fan-out: one model contains three sub-structures | `src/schema.py` -- `ExecOutput` |
-| Enforced population ("no empty lists") in system prompt | `src/workflow.py` -- `ASSISTANT_SYSTEM` |
-| Input type detection (email vs transcript) | `src/schema.py` -- `ExecOutput.input_type` |
-| Priority enum on extracted tasks | `src/schema.py` -- `ActionItem.priority` |
-| Synthetic 3-party email thread with SLA dispute | `main.py` -- API integration delay scenario |
+## Files
+
+```
+14-exec-assistant/
+  src/schema.py      # ExecOutput, ActionItem, and FollowUpEntry Pydantic models
+  src/workflow.py    # Builds the prompt and calls the model with structured output
+  main.py            # Runs a three-party email thread with an SLA dispute scenario
+  README.md
+```

@@ -22,6 +22,35 @@ This keeps the numbers accurate. The AI does the reading; Python does the math.
 
 ---
 
+## What you'll see
+
+```
+============================================================
+Business: SaaS startup
+============================================================
+Viability: VIABLE -- Net income turns positive in year 2; free cash flow positive from year 1.
+
+Year    Revenue        EBITDA    Net Income           FCF
+------------------------------------------------------
+Y1     $1,200,000    $100,000      $75,000      $315,000
+Y2     $1,740,000    $426,000     $319,500      $535,500
+Y3     $2,523,000    $873,400     $655,050      $869,050
+
+============================================================
+Business: Manufacturing company
+============================================================
+Viability: NOT VIABLE -- DSCR of 1.18x is below the 1.25x threshold in years 1–2.
+DSCR:      1.18x
+
+Year    Revenue        EBITDA    Net Income           FCF
+------------------------------------------------------
+Y1     $4,500,000    $820,000     $590,400      $390,400
+Y2     $5,040,000  $1,008,400     $726,048      $526,048
+Y3     $5,644,800  $1,219,936     $878,754      $678,754
+```
+
+---
+
 ## How to run
 
 ```bash

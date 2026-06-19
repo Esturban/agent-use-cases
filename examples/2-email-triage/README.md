@@ -23,3 +23,15 @@ email text  →  LLM + EmailTriage schema  →  typed result
 ```
 
 The model never sees free-form output -- the schema constrains every field.
+
+## What you'll see
+
+```
+LABEL                  URGENCY    CATEGORY       SUMMARY
+------------------------------------------------------------------------------------------
+Overdue invoice        high       billing        Account suspended – invoice #4821 ($4,200
+Production outage      high       technical      db-prod-01 unreachable, all services retu
+Compliance notice      high       general        GDPR Article 15 request – respond within
+Feature request        low        general        Customer requesting dark mode for the dash
+Marketing spam         low        spam           Promotional email, 80% discount offer, no
+```

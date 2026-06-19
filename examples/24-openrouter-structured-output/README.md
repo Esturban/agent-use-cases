@@ -1,33 +1,39 @@
 # 24 — OpenRouter Structured Output
 
-**Harness focus:** Provider-agnostic structured output — OpenRouter unified API with the `openai` SDK; swap the model string to change provider, pattern stays identical.
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/24-openrouter-structured-output/openrouter_structured_output_workbook.ipynb)
+
+Support teams and operations teams receive hundreds of emails a day. This example shows how to automatically sort each email into a priority level and category, and recommend a concrete next action — so staff only read what needs their attention.
 
 ---
 
-## Business problem
+## What it does
 
-Your email triage logic shouldn't be coupled to a single LLM provider. When pricing changes, a model is deprecated, or a new frontier model ships, you should be able to switch with a one-line change — not a refactor.
-
-This example shows how to use OpenRouter as a provider-agnostic gateway: the same `openai` SDK call, the same Pydantic schema, any model string.
+Each email is passed to a language model, which reads it and returns four structured fields: urgency (high, medium, or low), category (billing, technical, general, or spam), a one-sentence summary, and a recommended action. The result is guaranteed to match those exact fields — no parsing, no post-processing. Four diverse email samples run in sequence and the results print as a formatted table.
 
 ---
 
-## What it demonstrates
+## How it works
 
-- `client.beta.chat.completions.parse()` with a Pydantic `response_format` — structured output without LangChain
-- OpenRouter as a drop-in replacement for the OpenAI endpoint (`base_url="https://openrouter.ai/api/v1"`)
-- Swapping `model="openai/gpt-4o-mini"` → `"anthropic/claude-3-haiku"` → `"mistralai/mistral-7b-instruct"` without touching any other code
+The script sends each raw email body to OpenRouter's API using the standard OpenAI SDK, with a Pydantic model as the expected response shape. OpenRouter accepts any model string — swapping `openai/gpt-4o-mini` for `anthropic/claude-3-haiku` or `mistralai/mistral-7b-instruct` is a one-word change and nothing else in the code changes. The model reads the email and returns urgency, category, summary, and recommended action as typed fields. If the model cannot fit its answer into those fields, the call fails loudly rather than returning something unusable.
 
 ---
 
-## Schema
+## What you'll see
 
-```python
-class EmailTriage(BaseModel):
-    urgency: Literal["high", "medium", "low"]
-    category: Literal["billing", "technical", "general", "spam"]
-    summary: str
-    recommended_action: str
+```
+LABEL                  URGENCY    CATEGORY       SUMMARY
+------------------------------------------------------------------------------------------
+Overdue invoice        high       billing        Account suspended over unpaid invoice #48
+                                                 Action: Escalate to billing team immedia
+
+Feature request        low        general        Customer requests a dark mode option for
+                                                 Action: Log as a product feedback item an
+
+Security alert         high       technical      Suspicious login detected from unrecognis
+                                                 Action: Notify user to reset password and
+
+Vendor newsletter      low        spam           Vendor sharing Q3 product update and road
+                                                 Action: No action needed, archive the ema
 ```
 
 ---
@@ -35,28 +41,10 @@ class EmailTriage(BaseModel):
 ## How to run
 
 ```bash
-# 1. Get a free API key at https://openrouter.ai
-# 2. Add to your .env:
-#    OPENROUTER_API_KEY=sk-or-...
-
-pip install openai python-dotenv
+# Requires OPENROUTER_API_KEY in .env
+# Get a free key at https://openrouter.ai
 python examples/24-openrouter-structured-output/main.py
 ```
-
-To switch providers, change the `model` argument in `main.py` or pass it to `classify()`:
-
-```python
-result = classify(email, model="anthropic/claude-3-haiku")
-result = classify(email, model="mistralai/mistral-7b-instruct")
-```
-
----
-
-## Key insight
-
-The `openai` SDK's `beta.chat.completions.parse()` accepts any Pydantic model as `response_format`. Combined with OpenRouter's unified endpoint, the structured output pattern is **completely provider-agnostic** — the harness (schema + parse logic) never changes, only the model string does.
-
-Compare with [2-email-triage](../2-email-triage/README.md) which uses LangChain's `with_structured_output()` — same result, different entry point into the pattern.
 
 ---
 
@@ -64,8 +52,8 @@ Compare with [2-email-triage](../2-email-triage/README.md) which uses LangChain'
 
 ```
 24-openrouter-structured-output/
-  src/schema.py      # EmailTriage Pydantic model
-  src/workflow.py    # OpenAI client → OpenRouter + parse
-  main.py            # 4 diverse email samples
+  src/schema.py      # EmailTriage Pydantic model with urgency, category, summary, recommended_action
+  src/workflow.py    # OpenAI SDK call to OpenRouter endpoint with Pydantic response parsing
+  main.py            # 4 email samples (overdue invoice, feature request, security alert, newsletter)
   README.md
 ```
