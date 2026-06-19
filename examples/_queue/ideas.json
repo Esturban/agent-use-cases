@@ -323,7 +323,7 @@
     {
       "id": 31,
       "slug": "31-news-sentiment-monitor",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "openai-sdk",
       "domain": "marketing",

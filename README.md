@@ -1,6 +1,6 @@
 # Agent Use Cases
 
-30 working examples of AI agents solving real business problems. Each example is a self-contained Python project you can run in five minutes or open directly in Colab.
+31 working examples of AI agents solving real business problems. Each example is a self-contained Python project you can run in five minutes or open directly in Colab.
 
 Every example follows the same structure: a typed schema defines what the agent produces, a workflow wires the LLM calls together, and a main script runs two or three real-world scenarios so you can see the output immediately.
 
@@ -79,6 +79,7 @@ Not sure where to start? See [CATALOG.md](./CATALOG.md) for difficulty ratings, 
 | 28 | [Dependency Vulnerability Scanner](./examples/28-dependency-vuln-scanner/README.md) | Reads requirements.txt, calls OSV.dev for live CVE data (no key needed), LLM ranks findings by severity and writes the upgrade action plan | Engineering, DevSecOps | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/28-dependency-vuln-scanner/dependency_vuln_scanner_workbook.ipynb) |
 | 29 | [SEC ESG Extractor](./examples/29-sec-esg-extractor/README.md) | Fetches any company's latest 10-K from SEC EDGAR (no key needed), extracts ESG disclosures, maps them to CSRD categories, and scores completeness | ESG, Investor Relations, Legal | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/29-sec-esg-extractor/sec_esg_extractor_workbook.ipynb) |
 | 30 | [Supplier Risk Scorer](./examples/30-supplier-risk-scorer/README.md) | Scores a supplier list by geopolitical risk using live World Bank Governance Indicators (no key needed); LLM converts WGI scores into risk tiers, key risks, and mitigation actions | Supply Chain, Procurement, Risk | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/30-supplier-risk-scorer/supplier_risk_scorer_workbook.ipynb) |
+| 31 | [News Sentiment Monitor](./examples/31-news-sentiment-monitor/README.md) | Fetches live brand headlines from NewsAPI, classifies per-article sentiment, and produces a weekly digest with trend direction and notable shifts | Marketing, Communications, Strategy | `OPENAI_API_KEY` `NEWSAPI_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/31-news-sentiment-monitor/news_sentiment_monitor_workbook.ipynb) |
 
 </details>
 
@@ -106,3 +107,4 @@ pip install -r requirements.txt
 Keys needed:
 - `OPENAI_API_KEY` — most examples
 - `OPENROUTER_API_KEY` — examples 24, 25, 27 (free tier available at openrouter.ai)
+- `NEWSAPI_KEY` — example 31 (free tier at newsapi.org, 100 req/day)
