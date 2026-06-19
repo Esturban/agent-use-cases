@@ -344,7 +344,7 @@
     {
       "id": 33,
       "slug": "33-churn-signal-router",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "langgraph",
       "domain": "customer-success",
