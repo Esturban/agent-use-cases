@@ -354,7 +354,7 @@
     {
       "id": 34,
       "slug": "34-clinical-trial-finder",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "openai-sdk",
       "domain": "healthcare-admin",
