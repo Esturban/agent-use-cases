@@ -1,6 +1,6 @@
 # Agent Use Cases
 
-35 working examples of AI agents solving real business problems. Each example is a self-contained Python project you can run in five minutes or open directly in Colab.
+36 working examples of AI agents solving real business problems. Each example is a self-contained Python project you can run in five minutes or open directly in Colab.
 
 Every example follows the same structure: a typed schema defines what the agent produces, a workflow wires the LLM calls together, and a main script runs two or three real-world scenarios so you can see the output immediately.
 
@@ -84,6 +84,7 @@ Not sure where to start? See [CATALOG.md](./CATALOG.md) for difficulty ratings, 
 | 33 | [Churn Signal Router](./examples/33-churn-signal-router/README.md) | Classifies NPS survey responses into escalate / retain / neutral segments using score and comment together, then drafts a personalised follow-up per customer | Customer Success, Sales, Marketing | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/33-churn-signal-router/churn_signal_router_workbook.ipynb) |
 | 34 | [Clinical Trial Finder](./examples/34-clinical-trial-finder/README.md) | Queries ClinicalTrials.gov (no key needed) for recruiting trials, then filters and ranks results by patient eligibility with plain-language summaries | Healthcare Admin, Research, Patient Services | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/34-clinical-trial-finder/clinical_trial_finder_workbook.ipynb) |
 | 35 | [Board Memo Synthesizer](./examples/35-board-memo-synthesizer/README.md) | Fans out bull, bear, and risk analysts in parallel over the same analyst reports, then synthesises a board memo with a proceed / pause / reject recommendation | Executive, M&A, Corporate Finance | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/35-board-memo-synthesizer/board_memo_synthesizer_workbook.ipynb) |
+| 36 | [Incident Postmortem Drafter](./examples/36-incident-postmortem-drafter/README.md) | Parses a raw incident log into a structured timeline, then drafts a blameless postmortem with root cause, action items, and an executive summary | Engineering, IT Operations, SRE | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/36-incident-postmortem-drafter/incident_postmortem_drafter_workbook.ipynb) |
 
 </details>
 

@@ -375,7 +375,7 @@
     {
       "id": 36,
       "slug": "36-incident-postmortem-drafter",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "openai-sdk",
       "domain": "it-devops",
