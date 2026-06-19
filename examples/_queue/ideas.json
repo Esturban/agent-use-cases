@@ -365,7 +365,7 @@
     {
       "id": 35,
       "slug": "35-board-memo-synthesizer",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "langgraph",
       "domain": "executive",
