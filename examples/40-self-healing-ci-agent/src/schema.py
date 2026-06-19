@@ -2,97 +2,48 @@
 Pydantic models for the self-healing CI agent.
 
 Covers the full repair-loop lifecycle:
-  CIFailure → FailureClassification → RepairAttempt(s) → RepairPostmortem → HealingResult
+  CIFailure -> RepairAttempt(s) -> RepairPostmortem -> HealingResult
+
+RepairAttempt now records actual tool calls and their observed results rather
+than hypothetical patch descriptions — the agent calls real tools and the
+schema captures what happened.
 """
 from __future__ import annotations
 
-from typing import Literal
-
 from pydantic import BaseModel, Field
-
-ErrorType = Literal["dependency", "config", "code", "test", "flaky", "unknown"]
-RepairStrategy = Literal[
-    "pin_dependency", "update_config", "fix_syntax", "skip_test", "retry", "escalate"
-]
 
 
 class CIFailure(BaseModel):
     """Input: a single CI job failure to be healed."""
 
-    log_snippet: str = Field(
-        description="Relevant excerpt from the CI job log (stderr, traceback, exit output)."
+    error_log: str = Field(
+        description=(
+            "Full error log from the CI job (stderr, traceback, exit output). "
+            "This is passed verbatim to the agent as the problem to fix."
+        )
     )
     job_name: str = Field(
         description="Name of the CI job that failed (e.g. 'build', 'test', 'lint')."
     )
-    step_name: str = Field(
-        description="Name of the step within the job that produced the failure."
-    )
-    exit_code: int = Field(
-        description="Process exit code returned by the failing step."
-    )
-
-
-class FailureClassification(BaseModel):
-    """LLM output: classification of a CI failure."""
-
-    error_type: ErrorType = Field(
-        description=(
-            "Category of the failure: dependency (missing/conflicting package), "
-            "config (misconfigured env or CI YAML), code (syntax or runtime bug), "
-            "test (deterministic test assertion failure), flaky (non-deterministic / "
-            "intermittent failure), or unknown."
-        )
-    )
-    root_cause: str = Field(
-        description="One-sentence description of the most likely root cause."
-    )
-    suggested_strategy: RepairStrategy = Field(
-        description=(
-            "Recommended first repair strategy: pin_dependency, update_config, "
-            "fix_syntax, skip_test, retry, or escalate."
-        )
-    )
-    confidence: float = Field(
-        description=(
-            "Confidence score for this classification, between 0.0 (no confidence) "
-            "and 1.0 (certain)."
-        ),
-        ge=0.0,
-        le=1.0,
-    )
 
 
 class RepairAttempt(BaseModel):
-    """Record of a single repair iteration."""
+    """Record of a single tool call made during the repair loop."""
 
-    attempt_number: int = Field(
-        description="1-based index of this attempt within the current healing run."
+    iteration: int = Field(
+        description="1-based loop iteration in which this tool call occurred."
     )
-    strategy: RepairStrategy = Field(
-        description="Repair strategy applied in this attempt."
-    )
-    action_taken: str = Field(
+    tool_called: str = Field(
         description=(
-            "Concrete action performed (e.g. 'pinned requests==2.31.0 in requirements.txt')."
+            "Name of the tool the agent invoked "
+            "(apply_dependency_fix | apply_env_fix | apply_code_patch | run_tests)."
         )
     )
-    patch_description: str = Field(
-        description=(
-            "Human-readable description of what the patch changes and why it should "
-            "resolve the failure."
-        )
+    arguments: dict = Field(
+        description="Arguments passed to the tool, as a dict."
     )
-    validation_result: Literal["pass", "fail", "inconclusive"] = Field(
-        description=(
-            "Outcome after applying the patch: pass (issue resolved), "
-            "fail (patch did not help), or inconclusive (cannot determine)."
-        )
-    )
-    notes: str = Field(
-        description=(
-            "Additional context, warnings, or rationale from the LLM about this attempt."
-        )
+    result: dict = Field(
+        description="Return value from the tool, as a dict."
     )
 
 
@@ -101,12 +52,6 @@ class RepairPostmortem(BaseModel):
 
     job_name: str = Field(
         description="Name of the CI job that could not be healed."
-    )
-    error_type: ErrorType = Field(
-        description="Error category as determined during the initial classification step."
-    )
-    attempts: list[RepairAttempt] = Field(
-        description="All repair attempts made before giving up, in order."
     )
     terminal_failure: bool = Field(
         description=(
@@ -118,9 +63,7 @@ class RepairPostmortem(BaseModel):
         description="Final assessment of the root cause after all repair attempts."
     )
     recommended_fix: str = Field(
-        description=(
-            "Best recommended fix for a human engineer to apply manually."
-        )
+        description="Best recommended fix for a human engineer to apply manually."
     )
     escalation_notes: str = Field(
         description=(
@@ -131,25 +74,21 @@ class RepairPostmortem(BaseModel):
 
 
 class HealingResult(BaseModel):
-    """Top-level result returned by the orchestrator's run() function."""
+    """Top-level result returned by workflow.run()."""
 
-    job_name: str = Field(
-        description="Name of the CI job that was processed."
-    )
-    resolved: bool = Field(
+    healed: bool = Field(
         description=(
             "True if the agent successfully healed the failure, False if retries "
             "were exhausted."
         )
     )
-    attempts_taken: int = Field(
-        description="Total number of repair attempts made."
+    iterations_used: int = Field(
+        description="Total number of loop iterations consumed."
     )
-    final_strategy: RepairStrategy | None = Field(
-        default=None,
-        description="Strategy that resolved the failure, or None if unresolved.",
+    attempts: list[RepairAttempt] = Field(
+        description="All tool calls made during the healing run, in order."
     )
     postmortem: RepairPostmortem | None = Field(
         default=None,
-        description="Structured postmortem, populated only when resolved=False.",
+        description="Structured postmortem, populated only when healed=False.",
     )
