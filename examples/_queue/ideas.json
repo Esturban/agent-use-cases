@@ -312,7 +312,7 @@
     {
       "id": 30,
       "slug": "30-supplier-risk-scorer",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "supply-chain",
