@@ -7,15 +7,11 @@ Step 3: LLM synthesises raw CVE data into a typed VulnerabilityReport with sever
 """
 import json
 import os
-import urllib.request
 
 from openai import OpenAI
 
+from .osv_client import extract_fixed, extract_severity, query_osv
 from .schema import VulnerabilityReport
-
-_OSV_URL = "https://api.osv.dev/v1/query"
-
-_SEVERITY_RANK = {"CRITICAL": 4, "HIGH": 3, "MEDIUM": 2, "LOW": 1, "UNKNOWN": 0}
 
 _SYNTHESIS_SYSTEM = (
     "You are a security analyst reviewing dependency vulnerabilities fetched from OSV.dev. "
@@ -27,47 +23,6 @@ _SYNTHESIS_SYSTEM = (
     "- Write a 2-3 sentence risk_summary naming the most urgent packages to upgrade and why\n"
     "Use only the CVE data provided. Do not invent vulnerabilities."
 )
-
-
-def _query_osv(package: str, version: str, ecosystem: str) -> list[dict]:
-    """POST to OSV.dev and return raw vuln dicts. Returns [] on any error."""
-    payload = json.dumps({
-        "version": version,
-        "package": {"name": package, "ecosystem": ecosystem},
-    }).encode()
-    req = urllib.request.Request(
-        _OSV_URL,
-        data=payload,
-        headers={"Content-Type": "application/json"},
-        method="POST",
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            data = json.loads(resp.read())
-        return data.get("vulns", [])
-    except Exception:
-        return []
-
-
-def _extract_severity(vuln: dict) -> str:
-    """Best-effort severity extraction from an OSV vuln object."""
-    # GitHub Advisory and PyPI advisories store severity in database_specific
-    for affected in vuln.get("affected", []):
-        sev = affected.get("database_specific", {}).get("severity", "").upper()
-        if sev in _SEVERITY_RANK:
-            return sev
-    return "UNKNOWN"
-
-
-def _extract_fixed(vuln: dict) -> list[str]:
-    """Extract fixed version strings from affected ranges."""
-    fixed = []
-    for affected in vuln.get("affected", []):
-        for r in affected.get("ranges", []):
-            for event in r.get("events", []):
-                if "fixed" in event:
-                    fixed.append(event["fixed"])
-    return list(set(fixed))
 
 
 def parse_requirements(requirements_txt: str, ecosystem: str = "PyPI") -> list[tuple[str, str]]:
@@ -99,10 +54,9 @@ def scan(packages: list[tuple[str, str]], ecosystem: str = "PyPI") -> Vulnerabil
     """
     client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
-    # Fetch raw vulnerability data from OSV.dev
     raw_findings: list[dict] = []
     for name, version in packages:
-        vulns = _query_osv(name, version, ecosystem)
+        vulns = query_osv(name, version, ecosystem)
         if vulns:
             raw_findings.append({
                 "package": name,
@@ -112,8 +66,8 @@ def scan(packages: list[tuple[str, str]], ecosystem: str = "PyPI") -> Vulnerabil
                     {
                         "id": v.get("id", ""),
                         "summary": v.get("summary", "No summary available."),
-                        "severity": _extract_severity(v),
-                        "fixed_in": _extract_fixed(v),
+                        "severity": extract_severity(v),
+                        "fixed_in": extract_fixed(v),
                     }
                     for v in vulns
                 ],

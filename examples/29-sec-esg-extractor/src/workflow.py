@@ -6,20 +6,18 @@ Step 2: Fetch the filing index and extract the primary document URL.
 Step 3: Download a representative text chunk from the filing (Risk Factors + MD&A sections).
 Step 4: LLM maps ESG disclosures to CSRD reporting categories and scores completeness.
 """
-import json
 import os
-import re
-import urllib.request
-import urllib.parse
 
 from openai import OpenAI
 
 from .schema import ESGReport
-
-_EDGAR_SEARCH = "https://efts.sec.gov/LATEST/search-index?q=%22{query}%22&dateRange=custom&startdt={year}-01-01&enddt={year}-12-31&forms=10-K"
-_EDGAR_SUBMISSIONS = "https://data.sec.gov/submissions/CIK{cik}.json"
-_EDGAR_FILING_INDEX = "https://www.sec.gov/Archives/edgar/data/{cik}/{accession_dir}/{accession}-index.htm"
-_HEADERS = {"User-Agent": "agent-use-cases research@example.com", "Accept-Encoding": "gzip, deflate"}
+from .sec_client import (
+    extract_esg_sections,
+    fetch_filing_text,
+    get_company_name,
+    latest_10k,
+    search_cik,
+)
 
 _ANALYSIS_SYSTEM = (
     "You are an ESG analyst specialising in CSRD (Corporate Sustainability Reporting Directive) compliance. "
@@ -41,86 +39,6 @@ _CSRD_PROMPT = (
 )
 
 
-def _get(url: str, headers: dict | None = None) -> bytes:
-    req = urllib.request.Request(url, headers={**_HEADERS, **(headers or {})})
-    with urllib.request.urlopen(req, timeout=20) as resp:
-        return resp.read()
-
-
-def _search_cik(ticker: str) -> str:
-    """Resolve a ticker to a CIK via SEC EDGAR company tickers JSON."""
-    data = json.loads(_get("https://www.sec.gov/files/company_tickers.json"))
-    ticker_upper = ticker.upper()
-    for entry in data.values():
-        if entry.get("ticker", "").upper() == ticker_upper:
-            return str(entry["cik_str"]).zfill(10)
-    raise ValueError(f"Ticker not found in EDGAR: {ticker}")
-
-
-def _latest_10k(cik: str) -> tuple[str, int]:
-    """Return (accession_number, filing_year) for the most recent 10-K."""
-    data = json.loads(_get(_EDGAR_SUBMISSIONS.format(cik=cik)))
-    filings = data.get("filings", {}).get("recent", {})
-    forms = filings.get("form", [])
-    for i, form in enumerate(forms):
-        if form in ("10-K", "10-K/A"):
-            acc = filings["accessionNumber"][i].replace("-", "")
-            date = filings["filingDate"][i]
-            year = int(date[:4])
-            return acc, year
-    raise ValueError(f"No 10-K found for CIK {cik}")
-
-
-def _fetch_filing_text(cik: str, accession: str, max_chars: int = 40000) -> str:
-    """Download the primary 10-K document and return up to max_chars of text."""
-    acc_dir = accession  # already no dashes
-    acc_dashes = f"{accession[:10]}-{accession[10:12]}-{accession[12:]}"
-    index_url = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{acc_dir}/{acc_dashes}-index.json"
-    try:
-        index_data = json.loads(_get(index_url))
-        primary = next(
-            (f for f in index_data.get("directory", {}).get("item", [])
-             if f.get("name", "").endswith(".htm") and "10k" in f.get("name", "").lower()),
-            None,
-        )
-        if primary is None:
-            primary = next(
-                (f for f in index_data.get("directory", {}).get("item", [])
-                 if f.get("name", "").endswith(".htm")),
-                None,
-            )
-        if primary:
-            doc_url = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{acc_dir}/{primary['name']}"
-            raw = _get(doc_url).decode("utf-8", errors="ignore")
-            # Strip HTML tags
-            text = re.sub(r"<[^>]+>", " ", raw)
-            text = re.sub(r"\s+", " ", text)
-            return text[:max_chars]
-    except Exception:
-        pass
-    # Fallback: fetch the viewer text via EDGAR full-text search
-    return ""
-
-
-def _extract_esg_sections(text: str, max_chars: int = 30000) -> str:
-    """Pull out sections most likely to contain ESG content."""
-    markers = [
-        "risk factor", "environmental", "climate", "sustainability",
-        "social responsibility", "governance", "human capital",
-        "management's discussion", "legal proceedings",
-    ]
-    chunks: list[str] = []
-    lower = text.lower()
-    for marker in markers:
-        idx = lower.find(marker)
-        if idx != -1:
-            chunk = text[max(0, idx - 200): idx + 3000]
-            chunks.append(chunk)
-
-    combined = " ... ".join(chunks)
-    return combined[:max_chars] if combined else text[:max_chars]
-
-
 def analyse(ticker: str, company_name: str | None = None) -> ESGReport:
     """
     Fetch a company's latest 10-K from SEC EDGAR and extract ESG disclosures.
@@ -134,18 +52,18 @@ def analyse(ticker: str, company_name: str | None = None) -> ESGReport:
     """
     client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
-    cik = _search_cik(ticker)
-    accession, filing_year = _latest_10k(cik)
+    cik = search_cik(ticker)
+    accession, filing_year = latest_10k(cik)
 
-    raw_text = _fetch_filing_text(cik, accession)
-    esg_text = _extract_esg_sections(raw_text) if raw_text else "(Filing text unavailable — using ticker metadata only)"
+    raw_text = fetch_filing_text(cik, accession)
+    esg_text = (
+        extract_esg_sections(raw_text)
+        if raw_text
+        else "(Filing text unavailable -- using ticker metadata only)"
+    )
 
     if company_name is None:
-        try:
-            sub_data = json.loads(_get(_EDGAR_SUBMISSIONS.format(cik=cik)))
-            company_name = sub_data.get("name", ticker)
-        except Exception:
-            company_name = ticker
+        company_name = get_company_name(cik, fallback=ticker)
 
     prompt = _CSRD_PROMPT.format(
         company=company_name,
