@@ -385,7 +385,7 @@
     {
       "id": 37,
       "slug": "37-campaign-brief-fan-out",
-      "status": "pending",
+      "status": "done",
       "priority": "low",
       "framework": "langgraph",
       "domain": "marketing",
