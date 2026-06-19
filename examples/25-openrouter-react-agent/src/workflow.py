@@ -1,5 +1,5 @@
 """
-Manual ReAct loop — reason → act → observe — using only the openai SDK.
+Manual ReAct loop -- reason → act → observe -- using only the openai SDK.
 
 No LangGraph, no LangChain. The loop is explicit:
   1. Call the model with the current message history and tool definitions.
@@ -10,49 +10,12 @@ This is exactly what LangGraph's create_react_agent() does internally.
 """
 import json
 import os
-from typing import Any
 
 from openai import OpenAI
 
+from .prompts import SYSTEM_PROMPT
 from .schema import AgentStep
-
-TOOLS = [
-    {
-        "type": "function",
-        "function": {
-            "name": "add",
-            "description": "Add two numbers together.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "a": {"type": "number", "description": "First number."},
-                    "b": {"type": "number", "description": "Second number."},
-                },
-                "required": ["a", "b"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "multiply",
-            "description": "Multiply two numbers together.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "a": {"type": "number", "description": "First number."},
-                    "b": {"type": "number", "description": "Second number."},
-                },
-                "required": ["a", "b"],
-            },
-        },
-    },
-]
-
-DISPATCH: dict[str, Any] = {
-    "add": lambda a, b: a + b,
-    "multiply": lambda a, b: a * b,
-}
+from .tools import DISPATCH, TOOLS
 
 
 def run(question: str, model: str = "openai/gpt-4o-mini") -> tuple[str, list[AgentStep]]:
@@ -71,13 +34,7 @@ def run(question: str, model: str = "openai/gpt-4o-mini") -> tuple[str, list[Age
         api_key=os.environ["OPENROUTER_API_KEY"],
     )
     messages: list[dict] = [
-        {
-            "role": "system",
-            "content": (
-                "You are a math assistant. Solve problems using only the provided tools. "
-                "Do not compute answers yourself — always call a tool."
-            ),
-        },
+        {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": question},
     ]
 
