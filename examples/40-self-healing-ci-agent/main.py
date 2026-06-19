@@ -1,9 +1,11 @@
 """
 Example 40 — Self-Healing CI Agent
 
-Two CI failure scenarios:
-  A. Dependency conflict — missing package should resolve within retries.
-  B. Flaky test — keeps failing, exhausts retries, emits a structured postmortem.
+Two CI failure scenarios demonstrating real OpenAI tool-calling:
+  A. Missing dependency (ModuleNotFoundError) — agent calls apply_dependency_fix
+     then run_tests; tests pass on the first attempt.
+  B. Flaky network timeout — agent cannot resolve the failure; retries exhaust
+     and a structured postmortem is emitted.
 """
 from dotenv import load_dotenv
 
@@ -13,13 +15,11 @@ from src.schema import CIFailure  # noqa: E402
 from src.workflow import run  # noqa: E402
 
 # ---------------------------------------------------------------------------
-# Scenario A — dependency conflict (expected to resolve)
+# Scenario A — missing dependency (expected to heal)
 # ---------------------------------------------------------------------------
 SCENARIO_A = CIFailure(
     job_name="build",
-    step_name="install-dependencies",
-    exit_code=1,
-    log_snippet=(
+    error_log=(
         "Collecting dependencies from requirements.txt\n"
         "ERROR: Could not find a version that satisfies the requirement requests>=2.28.0\n"
         "ERROR: No matching distribution found for requests>=2.28.0\n"
@@ -29,13 +29,11 @@ SCENARIO_A = CIFailure(
 )
 
 # ---------------------------------------------------------------------------
-# Scenario B — flaky test (expected to exhaust retries and emit postmortem)
+# Scenario B — flaky network timeout (expected to exhaust retries + postmortem)
 # ---------------------------------------------------------------------------
 SCENARIO_B = CIFailure(
     job_name="test",
-    step_name="run-unit-tests",
-    exit_code=1,
-    log_snippet=(
+    error_log=(
         "FAILED tests/test_payment_processor.py::test_stripe_charge_idempotency\n"
         "AssertionError: assert response.status_code == 200\n"
         "  where response.status_code = 500\n"
@@ -53,31 +51,44 @@ SCENARIO_B = CIFailure(
 
 def _print_result(label: str, failure: CIFailure) -> None:
     print(f"\n{'=' * 60}")
-    print(f"Scenario {label}: {failure.job_name} / {failure.step_name}")
+    print(f"Scenario {label}: {failure.job_name}")
     print("=" * 60)
 
-    result = run(failure, max_retries=3)
+    result = run(failure, max_iterations=8)
 
-    print(f"Job:           {result.job_name}")
-    print(f"Resolved:      {result.resolved}")
-    print(f"Attempts:      {result.attempts_taken}")
+    print(f"Healed:          {result.healed}")
+    print(f"Iterations used: {result.iterations_used}")
+    print(f"Tool calls made: {len(result.attempts)}")
 
-    if result.resolved:
-        print(f"Final strategy: {result.final_strategy}")
+    if result.attempts:
+        print("\n--- Tool call trace ---")
+        for attempt in result.attempts:
+            status = ""
+            if attempt.tool_called == "run_tests":
+                passed = attempt.result.get("passed")
+                status = " [PASSED]" if passed else " [FAILED]"
+            print(
+                f"  [iter {attempt.iteration}] {attempt.tool_called}"
+                f"({', '.join(f'{k}={v!r}' for k, v in attempt.arguments.items())})"
+                f"{status}"
+            )
+            if attempt.tool_called == "run_tests":
+                print(f"    output: {attempt.result.get('output', '')}")
+
+    if result.healed:
+        passing_run = next(
+            (a for a in reversed(result.attempts) if a.tool_called == "run_tests"),
+            None,
+        )
+        if passing_run:
+            print(f"\nTests passed on iteration {passing_run.iteration}.")
     else:
         pm = result.postmortem
         if pm:
             print("\n--- Postmortem ---")
-            print(f"Error type:      {pm.error_type}")
             print(f"Root cause:      {pm.root_cause}")
             print(f"Recommended fix: {pm.recommended_fix}")
             print(f"Escalation:      {pm.escalation_notes}")
-            print(f"\nAttempts made: {len(pm.attempts)}")
-            for attempt in pm.attempts:
-                print(
-                    f"  [{attempt.attempt_number}] {attempt.strategy} "
-                    f"-> {attempt.validation_result}: {attempt.action_taken}"
-                )
 
 
 if __name__ == "__main__":
