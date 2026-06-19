@@ -301,7 +301,7 @@
     {
       "id": 29,
       "slug": "29-sec-esg-extractor",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "esg",
