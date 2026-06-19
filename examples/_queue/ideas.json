@@ -395,7 +395,7 @@
     {
       "id": 38,
       "slug": "38-deal-room-analyst",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "openai-sdk",
       "domain": "corporate-finance",
