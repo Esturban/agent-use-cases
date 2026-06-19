@@ -49,13 +49,12 @@ jobs:
             "$COUNT" "$LOG" > /tmp/pr_body.md
 
           if [ -z "$EXISTING" ]; then
-            URL=$(gh pr create --base main --head dev --title "$TITLE" --body-file /tmp/pr_body.md)
-            echo "PR created: $URL"
-            PR_NUMBER=$(gh pr list --head dev --base main --json number --jq '.[0].number')
+            gh pr create \
+              --base main --head dev \
+              --title "$TITLE" \
+              --body-file /tmp/pr_body.md \
+              --reviewer Esturban
           else
             gh pr edit "$EXISTING" --title "$TITLE" --body-file /tmp/pr_body.md
-            echo "PR #$EXISTING updated"
-            PR_NUMBER="$EXISTING"
+            echo "PR #$EXISTING already open"
           fi
-
-          gh pr edit "$PR_NUMBER" --add-reviewer Esturban || true
