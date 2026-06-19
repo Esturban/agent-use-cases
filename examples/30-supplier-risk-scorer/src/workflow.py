@@ -7,45 +7,11 @@ Step 3: LLM converts raw WGI scores into a composite risk score, tier, and mitig
 """
 import json
 import os
-import urllib.request
-import urllib.parse
 
 from openai import OpenAI
 
 from .schema import SupplierRiskRegister
-
-# World Bank API -- no key required
-# WGI indicator codes used:
-#   PV.EST  = Political Stability and Absence of Violence
-#   RL.EST  = Rule of Law
-#   CC.EST  = Control of Corruption
-#   RQ.EST  = Regulatory Quality
-_WB_URL = (
-    "https://api.worldbank.org/v2/country/{code}/indicator/{indicator}"
-    "?format=json&mrv=1&per_page=1"
-)
-
-_WGI_INDICATORS = {
-    "political_stability": "PV.EST",
-    "rule_of_law": "RL.EST",
-    "control_of_corruption": "CC.EST",
-    "regulatory_quality": "RQ.EST",
-}
-
-# ISO alpha-3 codes for common country names
-_COUNTRY_MAP = {
-    "china": "CHN", "usa": "USA", "united states": "USA", "us": "USA",
-    "germany": "DEU", "india": "IND", "mexico": "MEX", "brazil": "BRA",
-    "vietnam": "VNM", "taiwan": "TWN", "south korea": "KOR", "korea": "KOR",
-    "japan": "JPN", "malaysia": "MYS", "indonesia": "IDN", "thailand": "THA",
-    "bangladesh": "BGD", "pakistan": "PAK", "cambodia": "KHM", "myanmar": "MMR",
-    "nigeria": "NGA", "ethiopia": "ETH", "kenya": "KEN", "ghana": "GHA",
-    "south africa": "ZAF", "egypt": "EGY", "turkey": "TUR", "poland": "POL",
-    "ukraine": "UKR", "russia": "RUS", "france": "FRA", "uk": "GBR",
-    "united kingdom": "GBR", "italy": "ITA", "spain": "ESP", "canada": "CAN",
-    "australia": "AUS", "argentina": "ARG", "colombia": "COL", "chile": "CHL",
-    "peru": "PER", "sri lanka": "LKA", "philippines": "PHL",
-}
+from .wb_client import fetch_data_year, fetch_wgi, resolve_country_code
 
 _SCORING_SYSTEM = (
     "You are a supply chain risk analyst. Given World Bank Worldwide Governance Indicators (WGI) "
@@ -59,29 +25,6 @@ _SCORING_SYSTEM = (
     "- Write a 2-3 sentence portfolio_summary naming the highest-risk suppliers and priority action\n"
     "Use only the WGI data provided. Country-specific knowledge about current events may supplement."
 )
-
-
-def _resolve_country_code(country: str) -> str:
-    """Map country name to ISO alpha-3. Raises ValueError if unknown."""
-    return _COUNTRY_MAP.get(country.lower().strip(), country.upper()[:3])
-
-
-def _fetch_wgi(country_code: str) -> dict[str, float | None]:
-    """Fetch the four WGI scores for a country. Returns None values on failure."""
-    scores: dict[str, float | None] = {k: None for k in _WGI_INDICATORS}
-    for field, indicator in _WGI_INDICATORS.items():
-        url = _WB_URL.format(code=country_code.lower(), indicator=indicator)
-        try:
-            req = urllib.request.Request(url, headers={"User-Agent": "agent-use-cases"})
-            with urllib.request.urlopen(req, timeout=10) as resp:
-                data = json.loads(resp.read())
-            if len(data) >= 2 and data[1]:
-                value = data[1][0].get("value")
-                if value is not None:
-                    scores[field] = round(float(value), 3)
-        except Exception:
-            pass
-    return scores
 
 
 def score(suppliers: list[tuple[str, str]]) -> SupplierRiskRegister:
@@ -98,24 +41,9 @@ def score(suppliers: list[tuple[str, str]]) -> SupplierRiskRegister:
 
     supplier_data: list[dict] = []
     for name, country in suppliers:
-        code = _resolve_country_code(country)
-        scores = _fetch_wgi(code)
-        data_year = None
-        # Fetch data year from first available indicator
-        for indicator in _WGI_INDICATORS.values():
-            url = _WB_URL.format(code=code.lower(), indicator=indicator)
-            try:
-                req = urllib.request.Request(url, headers={"User-Agent": "agent-use-cases"})
-                with urllib.request.urlopen(req, timeout=10) as resp:
-                    data = json.loads(resp.read())
-                if len(data) >= 2 and data[1]:
-                    data_year = data[1][0].get("date")
-                    if data_year:
-                        data_year = int(data_year)
-                        break
-            except Exception:
-                pass
-
+        code = resolve_country_code(country)
+        scores = fetch_wgi(code)
+        data_year = fetch_data_year(code)
         supplier_data.append({
             "supplier": name,
             "country": country,
