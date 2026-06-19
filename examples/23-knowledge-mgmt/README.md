@@ -25,6 +25,34 @@ The in-memory corpus here has 5 documents. Swap it out for a vector store, a Sha
 
 ---
 
+## What you'll see
+
+```
+============================================================
+Query: We're pitching a SaaS company on EMEA market expansion. What does our prior work say about go-to-market strategy in Europe?
+============================================================
+
+Precedents retrieved (3):
+  [doc-004] Nordics SaaS Scale-Up — GTM Playbook (2023)
+    Relevance: Directly addresses EMEA partner-led expansion for a B2B SaaS firm, including channel strategy and localisation decisions.
+  [doc-001] Global Payments Platform — European Regulatory Entry
+    Relevance: Covers regulatory sequencing and entity setup in Germany and France, which will surface in the pitch conversation.
+  [doc-007] Series B FinTech — UK to EU Market Expansion
+    Relevance: Documents the trade-offs between direct sales and reseller models across three EMEA territories.
+
+Synthesis:
+Based on three prior engagements, the strongest predictor of EMEA SaaS success is choosing a single anchor market
+rather than launching across multiple countries simultaneously (doc-004, doc-007). The Nordics playbook recommends
+Germany or the Netherlands as a first landing zone due to English-language sales motion and faster procurement cycles.
+Regulatory complexity — particularly around data residency — should be addressed before commercial launch, not after
+(doc-001). A partner-led channel motion has outperformed direct sales in two of the three cases reviewed.
+
+Gaps (1):
+  - No precedent covers pricing localisation strategy (e.g. EUR vs USD invoicing, purchasing-power adjustment).
+```
+
+---
+
 ## How to run
 
 ```bash

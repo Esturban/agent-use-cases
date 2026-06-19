@@ -24,6 +24,38 @@ The tools use mock data here. Swap them out for Exa, a CRM API, or an SEC EDGAR 
 
 ---
 
+## What you'll see
+
+```
+============================================================
+Company: Acme Corp
+============================================================
+
+Funding:
+  Q1 2025  Series C  $120M  (Sequoia Capital)
+
+Leadership:
+  Q4 2024  CFO  departure  -- Sandra Okafor
+  Q1 2025  CFO  hire       -- Marcus Weil
+
+Regulatory:
+  [HIGH] Data Privacy: Under EU DPA investigation for cross-border data transfers without adequate safeguards.
+  [MEDIUM] Antitrust: Informal inquiry opened into recent acquisition of a logistics software startup.
+
+Strategic Signals:
+  * Expanding into APAC with a new Singapore entity registered in March 2025.
+    -> Budget cycle likely shifting; procurement decisions may move to regional leads.
+  * Signed a three-year infrastructure deal with a hyperscaler announced at their Q1 earnings call.
+    -> Long-term vendor lock-in underway — replatforming window is closing.
+
+Recommended Actions:
+  1. Schedule an exec briefing before their Q2 planning cycle closes — new CFO is still forming vendor opinions.
+  2. Send a GDPR compliance resource kit to reinforce your value in their risk programme.
+  3. Identify the Singapore country lead and initiate an introductory call within 30 days.
+```
+
+---
+
 ## How to run
 
 ```bash

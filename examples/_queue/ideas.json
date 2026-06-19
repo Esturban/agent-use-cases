@@ -290,7 +290,7 @@
     {
       "id": 28,
       "slug": "28-dependency-vuln-scanner",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "openai-sdk",
       "domain": "it-devops",
@@ -301,7 +301,7 @@
     {
       "id": 29,
       "slug": "29-sec-esg-extractor",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "esg",
@@ -312,7 +312,7 @@
     {
       "id": 30,
       "slug": "30-supplier-risk-scorer",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "supply-chain",
