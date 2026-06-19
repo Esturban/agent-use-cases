@@ -406,7 +406,7 @@
     {
       "id": 39,
       "slug": "39-regulatory-change-tracker",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "openai-sdk",
       "domain": "legal-compliance",
@@ -417,7 +417,7 @@
     {
       "id": 40,
       "slug": "40-self-healing-ci-agent",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "openai-sdk",
       "domain": "it-devops",
@@ -428,7 +428,7 @@
     {
       "id": 41,
       "slug": "41-competitor-response-engine",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "openai-sdk",
       "domain": "marketing",
@@ -439,7 +439,7 @@
     {
       "id": 42,
       "slug": "42-adaptive-investor-outreach",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "openai-sdk",
       "domain": "corporate-finance",
@@ -450,7 +450,7 @@
     {
       "id": 43,
       "slug": "43-customer-lifecycle-orchestrator",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "openai-sdk",
       "domain": "customer-success",
