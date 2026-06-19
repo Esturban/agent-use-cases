@@ -1,31 +1,12 @@
 # Agent Use Cases
 
-43 working examples of AI agents solving real business problems. Each example is a self-contained Python project you can run in five minutes or open directly in Colab.
+A teaching library of AI agent patterns in Python. 43 examples, each isolating one technique — from basic structured output to multi-stage orchestration pipelines with tool-calling and stateful state machines.
 
-Every example follows the same structure: a typed schema defines what the agent produces, a workflow wires the LLM calls together, and a main script runs two or three real-world scenarios so you can see the output immediately.
-
----
-
-## What you'll learn
-
-Each example isolates one technique. Work through them in order and you'll go from a basic tool-calling loop to multi-model parallel queries with consensus synthesis.
-
-**Covered techniques, from simple to complex:**
-
-- Get a structured, typed result instead of free text
-- Make the model cite its evidence — no ungrounded assertions
-- Route inputs to different downstream steps based on a classification
-- Pull specific data out of long, dense documents
-- Give the model tools to call and let it decide when to use them
-- Coordinate multiple agents on a single task with typed handoffs
-- Keep a stateful object up to date from a stream of unstructured updates
-- Retrieve relevant past work before drafting, then cite it in the output
-- Send the same prompt to multiple models in parallel and synthesise the results
-- Run the same pattern on any provider by swapping one model string
+Work through them in order or jump to the concept you need. Each is self-contained: a typed schema, a workflow, and two or three real scenarios you can run immediately.
 
 ---
 
-## Quickstart
+## How to start
 
 ```bash
 git clone https://github.com/Esturban/agent-use-cases.git
@@ -36,87 +17,124 @@ cp .env.example .env   # add your OPENAI_API_KEY
 python examples/1-basic-react-agent/main.py
 ```
 
-Or click any Colab badge in the table below — no local setup needed.
+Or open any workbook in Colab — no local setup needed.
 
-Not sure where to start? See [CATALOG.md](./CATALOG.md) for difficulty ratings, utility notes, and a by-department index.
+Keys you'll need:
+- `OPENAI_API_KEY` — most examples
+- `OPENROUTER_API_KEY` — examples 24, 25, 27, 42 (free tier at openrouter.ai)
+- `NEWSAPI_KEY` — example 31 (free tier at newsapi.org)
 
 ---
 
-## All Examples
+## Curriculum
 
-<details open>
-<summary>Click to expand</summary>
+### 1. Structured output and classification
+Get a typed result instead of free text. Score, classify, and route inputs. This is the foundation everything else builds on.
 
-| # | Example | What it does | Who uses it | Keys | Colab |
-|---|---------|--------------|-------------|:----:|:-----:|
-| 1 | [Basic ReAct Agent](./examples/1-basic-react-agent/README.md) | Model reasons, calls a tool, observes the result, repeats until done | Engineering, Data Science | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/1-basic-react-agent/basic_react_agent_workbook.ipynb) |
-| 2 | [Email Triage](./examples/2-email-triage/README.md) | Classifies inbound emails by urgency and category into a typed result | Operations, IT | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/2-email-triage/email_triage_workbook.ipynb) |
-| 3 | [Invoice Extractor](./examples/3-invoice-extractor/README.md) | Pulls vendor, amount, date, and line items from invoice text with validation and retry | Finance, Accounts Payable | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/3-invoice-extractor/invoice_extractor_workbook.ipynb) |
-| 4 | [Lead Qualifier](./examples/4-lead-qualifier/README.md) | Scores inbound leads against ICP criteria; every score must cite which criterion it used | Sales, Business Development | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/4-lead-qualifier/lead_qualifier_workbook.ipynb) |
-| 5 | [Support Ticket Router](./examples/5-support-ticket-router/README.md) | Classifies support tickets, routes to the right team, and drafts a first response | Customer Service, IT | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/5-support-ticket-router/support_ticket_router_workbook.ipynb) |
-| 6 | [Resume Screener](./examples/6-resume-screener/README.md) | Scores resumes against a job spec with the same schema so results are directly comparable | HR, Talent Acquisition | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/6-resume-screener/resume_screener_workbook.ipynb) |
-| 7 | [RFP Parser](./examples/7-rfp-parser/README.md) | Extracts requirements, deadlines, and scoring criteria from a dense procurement document | Procurement, Legal | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/7-rfp-parser/rfp_parser_workbook.ipynb) |
-| 8 | [Multi-Agent Research](./examples/8-multi-agent-research/README.md) | Supervisor coordinates a researcher and a writer; each hands off a typed result | Strategy, Research | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/8-multi-agent-research/multi_agent_research_workbook.ipynb) |
-| 9 | [Contract Reviewer](./examples/9-contract-reviewer/README.md) | Reviews contracts and flags risks; every finding must cite the clause it came from | Legal, Procurement | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/9-contract-reviewer/contract_reviewer_workbook.ipynb) |
-| 10 | [Due Diligence](./examples/10-due-diligence/README.md) | Reads multiple company documents and produces a unified risk register with severity and likelihood | Finance, M&A, Legal | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/10-due-diligence/due_diligence_workbook.ipynb) |
-| 11 | [Proposal Writer](./examples/11-proposal-writer/README.md) | Supervisor breaks down an RFP; specialist agents draft each section; assembler returns a full proposal | Sales, Consulting | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/11-proposal-writer/proposal_writer_workbook.ipynb) |
-| 12 | [Board Pack Reviewer](./examples/12-board-pack-reviewer/README.md) | Reads a board pack and produces a director briefing: top risks, information gaps, questions for management | Governance, Board, Finance | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/12-board-pack-reviewer/board_pack_workbook.ipynb) |
-| 13 | [M&A Screener](./examples/13-ma-screener/README.md) | Scores acquisition targets across strategic fit, financials, and operations; blocked below threshold | Corporate Finance, M&A | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/13-ma-screener/ma_screener_workbook.ipynb) |
-| 14 | [Executive Assistant](./examples/14-exec-assistant/README.md) | One email or transcript in; draft reply, action items, and follow-up tracker out simultaneously | Operations, Executive Office | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/14-exec-assistant/exec_assistant_workbook.ipynb) |
-| 15 | [Regulatory Researcher](./examples/15-regulatory-researcher/README.md) | Analyses regulatory documents and returns obligations, deadlines, and penalties; every item cites its article | Compliance, Legal, Risk | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/15-regulatory-researcher/regulatory_researcher_workbook.ipynb) |
-| 16 | [Management Consulting](./examples/16-mgmt-consulting/README.md) | Identifies inefficiencies and places each recommendation on an effort-vs-impact matrix, quick wins first | Operations, Finance, Consulting | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/16-mgmt-consulting/mgmt_consulting_workbook.ipynb) |
-| 17 | [Corporate Finance](./examples/17-corporate-finance/README.md) | Rates a company across five readiness dimensions; any dimension failing blocks the overall verdict | Corporate Finance, CFO | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/17-corporate-finance/corporate_finance_workbook.ipynb) |
-| 18 | [Fundraising Agent](./examples/18-fundraising-agent/README.md) | Same company brief produces different investor materials shaped for VC, PE, and family office audiences | Corporate Finance, Investor Relations | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/18-fundraising-agent/fundraising_agent_workbook.ipynb) |
-| 19 | [Financial Modeller](./examples/19-financial-modeller/README.md) | LLM reads a business brief and extracts assumptions; Python runs the 3-year P&L, cash flow, and DSCR math | Finance, FP&A | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/19-financial-modeller/financial_modeller_workbook.ipynb) |
-| 20 | [Strategy Consultant](./examples/20-strategy-consultant/README.md) | Agent searches market size, competitors, and regulatory data then delivers an ENTER / MONITOR / AVOID verdict | Strategy, Corporate Development | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/20-strategy-consultant/strategy_consultant_workbook.ipynb) |
-| 21 | [Client Intel Monitor](./examples/21-client-intel/README.md) | Searches news, filings, leadership changes, and market signals then produces a typed brief with account actions | Sales, Account Management | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/21-client-intel/client_intel_workbook.ipynb) |
-| 22 | [AI Project Manager](./examples/22-ai-pmo/README.md) | Parses project updates — emails, call notes, messages — and keeps a typed state object current; re-derives RAG status each time | Operations, PMO | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/22-ai-pmo/ai_pmo_workbook.ipynb) |
-| 23 | [Knowledge Management](./examples/23-knowledge-mgmt/README.md) | Finds relevant past work in a corpus before drafting; the output must cite which documents it drew from | Professional Services, Knowledge Management | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/23-knowledge-mgmt/knowledge_mgmt_workbook.ipynb) |
-| 24 | [OpenRouter Structured Output](./examples/24-openrouter-structured-output/README.md) | Same email triage schema as example 2, running on any OpenRouter model — change the model string, nothing else changes | Operations, Engineering | `OPENROUTER_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/24-openrouter-structured-output/openrouter_structured_output_workbook.ipynb) |
-| 25 | [Manual ReAct Loop](./examples/25-openrouter-react-agent/README.md) | Implements the tool-calling loop from scratch in 80 lines — message list, tool dispatch dict, while loop, no framework | Engineering, Data Science | `OPENROUTER_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/25-openrouter-react-agent/openrouter_react_agent_workbook.ipynb) |
-| 26 | [PydanticAI Agent](./examples/26-pydantic-ai-agent/README.md) | Invoice extractor built with PydanticAI — the schema defines the agent's output and tools before any logic is written | Finance, Operations | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/26-pydantic-ai-agent/pydantic_ai_agent_workbook.ipynb) |
-| 27 | [Multi-Provider Fan-Out](./examples/27-multi-provider-fan-out/README.md) | Sends the same question to GPT-4o-mini, Mistral, and Llama in parallel; collects typed opinions; synthesises a consensus | Strategy, Research | `OPENROUTER_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/27-multi-provider-fan-out/multi_provider_fan_out_workbook.ipynb) |
-| 28 | [Dependency Vulnerability Scanner](./examples/28-dependency-vuln-scanner/README.md) | Reads requirements.txt, calls OSV.dev for live CVE data (no key needed), LLM ranks findings by severity and writes the upgrade action plan | Engineering, DevSecOps | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/28-dependency-vuln-scanner/dependency_vuln_scanner_workbook.ipynb) |
-| 29 | [SEC ESG Extractor](./examples/29-sec-esg-extractor/README.md) | Fetches any company's latest 10-K from SEC EDGAR (no key needed), extracts ESG disclosures, maps them to CSRD categories, and scores completeness | ESG, Investor Relations, Legal | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/29-sec-esg-extractor/sec_esg_extractor_workbook.ipynb) |
-| 30 | [Supplier Risk Scorer](./examples/30-supplier-risk-scorer/README.md) | Scores a supplier list by geopolitical risk using live World Bank Governance Indicators (no key needed); LLM converts WGI scores into risk tiers, key risks, and mitigation actions | Supply Chain, Procurement, Risk | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/30-supplier-risk-scorer/supplier_risk_scorer_workbook.ipynb) |
-| 31 | [News Sentiment Monitor](./examples/31-news-sentiment-monitor/README.md) | Fetches live brand headlines from NewsAPI, classifies per-article sentiment, and produces a weekly digest with trend direction and notable shifts | Marketing, Communications, Strategy | `OPENAI_API_KEY` `NEWSAPI_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/31-news-sentiment-monitor/news_sentiment_monitor_workbook.ipynb) |
-| 32 | [Onboarding Orchestrator](./examples/32-onboarding-orchestrator/README.md) | Fans out IT provisioning, HR documentation, and Facilities setup to three parallel sub-agents; synthesises their outputs into a Day 1 readiness plan | HR, Operations, IT | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/32-onboarding-orchestrator/onboarding_orchestrator_workbook.ipynb) |
-| 33 | [Churn Signal Router](./examples/33-churn-signal-router/README.md) | Classifies NPS survey responses into escalate / retain / neutral segments using score and comment together, then drafts a personalised follow-up per customer | Customer Success, Sales, Marketing | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/33-churn-signal-router/churn_signal_router_workbook.ipynb) |
-| 34 | [Clinical Trial Finder](./examples/34-clinical-trial-finder/README.md) | Queries ClinicalTrials.gov (no key needed) for recruiting trials, then filters and ranks results by patient eligibility with plain-language summaries | Healthcare Admin, Research, Patient Services | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/34-clinical-trial-finder/clinical_trial_finder_workbook.ipynb) |
-| 35 | [Board Memo Synthesizer](./examples/35-board-memo-synthesizer/README.md) | Fans out bull, bear, and risk analysts in parallel over the same analyst reports, then synthesises a board memo with a proceed / pause / reject recommendation | Executive, M&A, Corporate Finance | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/35-board-memo-synthesizer/board_memo_synthesizer_workbook.ipynb) |
-| 36 | [Incident Postmortem Drafter](./examples/36-incident-postmortem-drafter/README.md) | Parses a raw incident log into a structured timeline, then drafts a blameless postmortem with root cause, action items, and an executive summary | Engineering, IT Operations, SRE | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/36-incident-postmortem-drafter/incident_postmortem_drafter_workbook.ipynb) |
-| 37 | [Campaign Brief Fan-Out](./examples/37-campaign-brief-fan-out/README.md) | One campaign brief fans out in parallel to email copywriter, social media strategist, and blog planner; assembles all three into a typed ContentPack | Marketing, Content, Growth | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/37-campaign-brief-fan-out/campaign_brief_fan_out_workbook.ipynb) |
-| 38 | [Deal Room Analyst](./examples/38-deal-room-analyst/README.md) | Full M&A pipeline: contract review → due diligence → financial model → board memo; orchestrator halts and escalates at any stage where confidence falls below threshold | Corporate Finance, M&A, Legal | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/38-deal-room-analyst/deal_room_analyst_workbook.ipynb) |
-| 39 | [Regulatory Change Tracker](./examples/39-regulatory-change-tracker/README.md) | Diffs a regulatory update against a stored obligation register, extracts net-new obligations, cross-references each against a contract corpus in parallel, scores exposure severity, and writes a versioned compliance state | Legal, Compliance, Risk | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/39-regulatory-change-tracker/regulatory_change_tracker_workbook.ipynb) |
-| 40 | [Self-Healing CI Agent](./examples/40-self-healing-ci-agent/README.md) | Classifies a CI failure, selects a repair strategy, applies it, re-validates — loops up to N retries; on terminal failure emits a structured postmortem | Engineering, DevOps, SRE | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/40-self-healing-ci-agent/self_healing_ci_agent_workbook.ipynb) |
-| 41 | [Competitor Response Engine](./examples/41-competitor-response-engine/README.md) | Classifies competitor signals by response urgency; only on "respond" does the orchestrator generate a counter-brief and fan out to email, social, and blog specialists | Marketing, Growth, Strategy | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/41-competitor-response-engine/competitor_response_engine_workbook.ipynb) |
-| 42 | [Adaptive Investor Outreach](./examples/42-adaptive-investor-outreach/README.md) | Builds a 3-year financial model then generates tailored materials for VC, PE, and family office personas in parallel; every key financial claim is cross-validated across 3 models via OpenRouter before inclusion | Corporate Finance, Investor Relations | `OPENAI_API_KEY` `OPENROUTER_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/42-adaptive-investor-outreach/adaptive_investor_outreach_workbook.ipynb) |
-| 43 | [Customer Lifecycle Orchestrator](./examples/43-customer-lifecycle-orchestrator/README.md) | Stateful orchestrator holds a typed CustomerRecord across lead → onboarding → healthy → at-risk → renewal stages, dispatching a different specialist agent set per stage based on incoming signals | Customer Success, Sales, Operations | `OPENAI_API_KEY` | [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/43-customer-lifecycle-orchestrator/customer_lifecycle_orchestrator_workbook.ipynb) |
+| # | Example | Technique |
+|---|---------|-----------|
+| 1 | [Basic ReAct Agent](./examples/1-basic-react-agent/README.md) | Reason → call tool → observe loop |
+| 2 | [Email Triage](./examples/2-email-triage/README.md) | Schema-constrained classification |
+| 3 | [Invoice Extractor](./examples/3-invoice-extractor/README.md) | Structured extraction with retry on validation failure |
+| 4 | [Lead Qualifier](./examples/4-lead-qualifier/README.md) | Scoring rubric — every score cites its criterion |
+| 5 | [Support Ticket Router](./examples/5-support-ticket-router/README.md) | Classify → route → conditional draft reply |
+| 6 | [Resume Screener](./examples/6-resume-screener/README.md) | Comparable scored output across many inputs |
 
-</details>
+### 2. Extraction from documents
+Pull structure from long, dense, or multi-document inputs. Grounded output — every finding cites its source.
+
+| # | Example | Technique |
+|---|---------|-----------|
+| 7 | [RFP Parser](./examples/7-rfp-parser/README.md) | Long-context extraction from a procurement document |
+| 9 | [Contract Reviewer](./examples/9-contract-reviewer/README.md) | Clause-level risk extraction with citation |
+| 10 | [Due Diligence](./examples/10-due-diligence/README.md) | Multi-document risk register synthesis |
+| 12 | [Board Pack Reviewer](./examples/12-board-pack-reviewer/README.md) | Director briefing from a governance document |
+| 15 | [Regulatory Researcher](./examples/15-regulatory-researcher/README.md) | Obligations and deadlines with article citations |
+| 23 | [Knowledge Management](./examples/23-knowledge-mgmt/README.md) | Retrieve relevant past work, then cite it in the output |
+
+### 3. Multi-agent coordination
+Supervisor/worker patterns. Parallel fan-out. Typed handoffs between agents.
+
+| # | Example | Technique |
+|---|---------|-----------|
+| 8 | [Multi-Agent Research](./examples/8-multi-agent-research/README.md) | Supervisor → researcher → writer with typed handoffs |
+| 11 | [Proposal Writer](./examples/11-proposal-writer/README.md) | Supervisor breaks down RFP; specialists draft sections |
+| 14 | [Executive Assistant](./examples/14-exec-assistant/README.md) | Parallel: draft reply + action items + follow-up tracker |
+| 32 | [Onboarding Orchestrator](./examples/32-onboarding-orchestrator/README.md) | IT + HR + Facilities fan-out → Day 1 readiness plan |
+| 35 | [Board Memo Synthesizer](./examples/35-board-memo-synthesizer/README.md) | Bull + bear + risk analysts in parallel → board memo |
+| 37 | [Campaign Brief Fan-Out](./examples/37-campaign-brief-fan-out/README.md) | One brief → email + social + blog in parallel |
+| 41 | [Competitor Response Engine](./examples/41-competitor-response-engine/README.md) | Classify urgency gate → conditional content fan-out |
+
+### 4. Tool-calling and real APIs
+The LLM calls Python functions and observes results. Real APIs — no mocked data.
+
+| # | Example | Technique |
+|---|---------|-----------|
+| 25 | [Manual ReAct Loop](./examples/25-openrouter-react-agent/README.md) | Tool-calling loop written from scratch in 80 lines |
+| 28 | [Dependency Vulnerability Scanner](./examples/28-dependency-vuln-scanner/README.md) | Calls OSV.dev live; LLM ranks real CVEs |
+| 29 | [SEC ESG Extractor](./examples/29-sec-esg-extractor/README.md) | Fetches live 10-K from SEC EDGAR; extracts ESG disclosures |
+| 30 | [Supplier Risk Scorer](./examples/30-supplier-risk-scorer/README.md) | Calls World Bank Governance Indicators; LLM scores risk tiers |
+| 34 | [Clinical Trial Finder](./examples/34-clinical-trial-finder/README.md) | Queries ClinicalTrials.gov; filters by patient eligibility |
+| 36 | [Incident Postmortem Drafter](./examples/36-incident-postmortem-drafter/README.md) | Log parser tool → structured postmortem document |
+| 40 | [Self-Healing CI Agent](./examples/40-self-healing-ci-agent/README.md) | Calls `run_tests` + `apply_fix` tools; loops until green or postmortem |
+
+### 5. Stateful orchestration
+Typed state objects that accumulate updates. Stage transitions. Confidence gates. Versioned state.
+
+| # | Example | Technique |
+|---|---------|-----------|
+| 22 | [AI Project Manager](./examples/22-ai-pmo/README.md) | Parse updates → keep typed state current; re-derive RAG status |
+| 38 | [Deal Room Analyst](./examples/38-deal-room-analyst/README.md) | Confidence-gated pipeline — halts and escalates on weak signals |
+| 39 | [Regulatory Change Tracker](./examples/39-regulatory-change-tracker/README.md) | Diffs update against obligation register; versioned compliance state |
+| 43 | [Customer Lifecycle Orchestrator](./examples/43-customer-lifecycle-orchestrator/README.md) | Stage-gated state machine; specialist per lifecycle stage |
+
+### 6. Multi-provider and adaptive generation
+OpenRouter fan-out. Cross-model consensus. Persona-targeted output. Provider-agnostic patterns.
+
+| # | Example | Technique |
+|---|---------|-----------|
+| 24 | [OpenRouter Structured Output](./examples/24-openrouter-structured-output/README.md) | Same schema, any model — swap one string |
+| 27 | [Multi-Provider Fan-Out](./examples/27-multi-provider-fan-out/README.md) | Same question → 3 models in parallel → consensus |
+| 42 | [Adaptive Investor Outreach](./examples/42-adaptive-investor-outreach/README.md) | Persona-targeted generation + 3-model claim cross-validation |
+
+### Domain examples
+Real business workflows that combine techniques from the sections above.
+
+| # | Example | Domain |
+|---|---------|--------|
+| 13 | [M&A Screener](./examples/13-ma-screener/README.md) | Corporate Finance |
+| 16 | [Management Consulting](./examples/16-mgmt-consulting/README.md) | Operations |
+| 17 | [Corporate Finance](./examples/17-corporate-finance/README.md) | Finance |
+| 18 | [Fundraising Agent](./examples/18-fundraising-agent/README.md) | Investor Relations |
+| 19 | [Financial Modeller](./examples/19-financial-modeller/README.md) | Finance / FP&A |
+| 20 | [Strategy Consultant](./examples/20-strategy-consultant/README.md) | Strategy |
+| 21 | [Client Intel Monitor](./examples/21-client-intel/README.md) | Sales |
+| 26 | [PydanticAI Agent](./examples/26-pydantic-ai-agent/README.md) | Engineering |
+| 31 | [News Sentiment Monitor](./examples/31-news-sentiment-monitor/README.md) | Marketing |
+| 33 | [Churn Signal Router](./examples/33-churn-signal-router/README.md) | Customer Success |
+| 40 | [Self-Healing CI Agent](./examples/40-self-healing-ci-agent/README.md) | DevOps / SRE |
 
 ---
 
 ## Structure
 
-Every example follows the same layout:
+Each example only has the files it actually needs:
 
 ```
 examples/N-example-name/
-  src/schema.py      # Pydantic models — defines what the agent produces
-  src/workflow.py    # LLM calls, tool definitions, agent logic
-  main.py            # 2-3 runnable scenarios
-  *_workbook.ipynb   # Colab notebook — same code, no local setup needed
+  src/schema.py       # Pydantic models — typed contract for what the agent produces
+  src/prompts.py      # Prompt constants
+  src/workflow.py     # run() — LLM calls, tool dispatch, orchestration logic
+  src/tools.py        # Tool functions the LLM calls (only when the example uses tool-calling)
+  src/agents.py       # Named agent configs (only when the example has multiple distinct agents)
+  src/providers.py    # Provider routing (only when the example uses multiple LLM providers)
+  main.py             # 2-3 runnable scenarios
+  *_workbook.ipynb    # Colab notebook with framework comparisons and exercises
   README.md
 ```
 
-Install once, run any example:
+---
 
-```bash
-pip install -r requirements.txt
-```
+## Full example list
 
-Keys needed:
-- `OPENAI_API_KEY` — most examples
-- `OPENROUTER_API_KEY` — examples 24, 25, 27, 42 (free tier available at openrouter.ai)
-- `NEWSAPI_KEY` — example 31 (free tier at newsapi.org, 100 req/day)
+See [CATALOG.md](./CATALOG.md) for all 43 examples with difficulty ratings, department index, and technique tags.
