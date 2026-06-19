@@ -391,6 +391,72 @@
       "domain": "marketing",
       "harness_focus": "parallel specialist fan-out -- one campaign brief fans out simultaneously to email copy, social captions, and blog outline sub-agents; results assembled into a typed multi-channel content pack",
       "description": "Turn one campaign brief into a full content pack -- fan out in parallel to specialist agents for email copy, social captions, and a blog post outline; assemble all three into a single typed ContentPack object"
+    },
+    {
+      "id": 38,
+      "slug": "38-deal-room-analyst",
+      "status": "pending",
+      "priority": "high",
+      "framework": "openai-sdk",
+      "domain": "corporate-finance",
+      "harness_focus": "confidence-gated sequential pipeline -- contract review, due diligence, financial model, and board memo stages run in order; each writes a numeric confidence score and the orchestrator halts and escalates if any stage falls below threshold",
+      "description": "Full M&A deal pipeline: contract review, due diligence risk register, 3-year financial model, and board memo with go/no-go recommendation. Orchestrator gates each stage on confidence and halts with an escalation flag rather than proceeding on weak signals.",
+      "prerequisites": [9, 10, 13, 19, 35]
+    },
+    {
+      "id": 39,
+      "slug": "39-regulatory-change-tracker",
+      "status": "pending",
+      "priority": "high",
+      "framework": "openai-sdk",
+      "domain": "legal-compliance",
+      "harness_focus": "delta-aware stateful extraction -- agent diffs a new regulatory update against a stored obligation register, identifies net-new obligations, cross-references each against a contract corpus, scores impact per obligation (none/moderate/severe), and writes versioned updates to a typed compliance state object",
+      "description": "Ingest a regulatory update, extract net-new obligations, cross-reference each against an existing contract corpus to identify exposure, score impact severity, draft remediation action items, and update a versioned compliance tracker object.",
+      "prerequisites": [7, 9, 15, 22]
+    },
+    {
+      "id": 40,
+      "slug": "40-self-healing-ci-agent",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "openai-sdk",
+      "domain": "it-devops",
+      "harness_focus": "agentic repair loop with structured rollback -- bounded ReAct loop reads CI failure logs, classifies error type, selects a repair strategy, applies it, re-validates; each iteration result is typed; agent halts and emits a structured postmortem on terminal failure after N retries",
+      "description": "Read CI failure logs, classify the error type (dependency, config, code, flaky), select a repair strategy, apply it, re-validate, and loop up to N retries. On terminal failure, emit a structured postmortem. Demonstrates a bounded self-repair loop with typed intermediate state.",
+      "prerequisites": [25, 28, 36]
+    },
+    {
+      "id": 41,
+      "slug": "41-competitor-response-engine",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "openai-sdk",
+      "domain": "marketing",
+      "harness_focus": "closed-loop signal-to-action -- monitoring agent surfaces competitor and brand signals; a gate agent classifies response urgency (ignore/watch/respond); only on respond does the orchestrator spin up a counter-campaign brief and content fan-out, keeping expensive generation conditional on signal strength",
+      "description": "Monitor competitor news and brand sentiment, classify the opportunity (ignore/watch/respond), and only when responding generate a counter-campaign brief then fan out to a full content pack. Demonstrates a conditional generation gate that keeps expensive downstream work gated on signal quality.",
+      "prerequisites": [21, 31, 37]
+    },
+    {
+      "id": 42,
+      "slug": "42-adaptive-investor-outreach",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "openai-sdk",
+      "domain": "corporate-finance",
+      "harness_focus": "persona-adaptive generation with multi-model claim validation -- financial model feeds per-persona investor materials (VC/PE/family office); every key financial claim is then cross-validated across 3 models via fan-out before inclusion, combining audience targeting with cross-provider consistency checks",
+      "description": "Build a 3-year financial model from a company brief, generate tailored fundraising materials for each investor persona, then cross-validate every key financial claim across 3 models before finalising. Combines audience-targeted generation with multi-provider claim verification.",
+      "prerequisites": [18, 19, 27, 35]
+    },
+    {
+      "id": 43,
+      "slug": "43-customer-lifecycle-orchestrator",
+      "status": "pending",
+      "priority": "medium",
+      "framework": "openai-sdk",
+      "domain": "customer-success",
+      "harness_focus": "lifecycle-stage state machine -- stateful orchestrator holds a typed CustomerRecord, applies stage transitions (lead/onboarding/healthy/at-risk/renewal) based on incoming signals, and dispatches a different specialist agent set per stage rather than running all agents every time",
+      "description": "Track a customer account through lifecycle stages -- lead, onboarding, healthy, at-risk, renewal -- routing to a different specialist agent set at each stage (qualifier, onboarding planner, health scorer, churn responder, renewal drafter). A single typed CustomerRecord accumulates updates across all stages.",
+      "prerequisites": [4, 5, 32, 33]
     }
   ]
 }
