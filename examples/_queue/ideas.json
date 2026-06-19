@@ -334,7 +334,7 @@
     {
       "id": 32,
       "slug": "32-onboarding-orchestrator",
-      "status": "pending",
+      "status": "done",
       "priority": "medium",
       "framework": "langgraph",
       "domain": "hr",
