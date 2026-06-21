@@ -1,11 +1,15 @@
 """Gradio demo — Commercial Due Diligence via OpenRouter structured output."""
 
 import os
+import sys
 
 import gradio as gr
+from dotenv import load_dotenv
 from openai import OpenAI
 
-from src.schema import DDReport, DocumentFindings
+load_dotenv()
+sys.path.insert(0, os.path.dirname(__file__))
+from src.schema import DDReport, DocumentFindings  # noqa: E402
 
 EXTRACTOR_SYSTEM = (
     "You are a due diligence analyst extracting structured findings from a single document. "
@@ -64,6 +68,9 @@ ASSESSMENT_LABELS = {
 }
 SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
 MODELS = [
+    "openai/gpt-5.4-nano",
+    "minimax/minimax-m3",
+    "openai/gpt-4.1-nano",
     "openai/gpt-4o-mini",
     "anthropic/claude-haiku-4-5",
     "google/gemini-flash-1.5",
@@ -143,10 +150,30 @@ sample_texts = list(SAMPLE_DOCS.values()) + [""] * 4
 
 with gr.Blocks(title="Due Diligence Analyzer") as demo:
     gr.Markdown(
-        "## Commercial Due Diligence\n"
-        "Upload up to 4 documents. The agent extracts findings from each, "
-        "then synthesises a unified risk register."
+        "## 🔍 Commercial Due Diligence\n"
+        "Paste up to 4 deal documents → the agent extracts findings from each in parallel, "
+        "then synthesises a unified risk register with an overall deal verdict.\n\n"
+        "**Built for:** M&A advisors, corporate development teams, and PE analysts who need "
+        "a structured first-pass risk register before committing to full diligence."
     )
+
+    with gr.Accordion("How it works — 2-step agent pipeline", open=True):
+        gr.Markdown(
+            "**Step 1 — Extract:** one API call per document pulls key findings, red flags, "
+            "and unanswered questions from each source independently.\n\n"
+            "**Step 2 — Synthesise:** a second call consolidates all per-document findings "
+            "into a unified risk register, scores each risk by severity and likelihood, "
+            "and returns a deal verdict: Proceed / Proceed with conditions / Do not proceed.\n\n"
+            "| Risk level | Meaning |\n"
+            "|------------|--------|\n"
+            "| 🔴 Critical | Deal-breaker — must resolve before proceeding |\n"
+            "| 🟠 High | Material risk — negotiate conditions or price adjust |\n"
+            "| 🟡 Medium | Monitor — flag in SPA reps & warranties |\n"
+            "| 🟢 Low | Note for record — not a blocker |\n\n"
+            "_Sample: Acme Technologies Ltd — Series B target with customer concentration, "
+            "ICO enforcement action, and a CEO relocation risk._"
+        )
+
     with gr.Accordion("Documents (edit or replace)", open=True):
         doc_rows = []
         for i in range(4):
