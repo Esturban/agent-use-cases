@@ -400,9 +400,13 @@ TICKET_SAMPLES = [
     ["Charged twice this month - invoice #4821", "Sarah Chen", "schen@example.com",
      "I noticed my credit card was charged $99 twice on June 1st. Invoice #4821 shows a duplicate charge. Please refund ASAP."],
     ["Dashboard not loading - production down", "Marcus Torres", "m.torres@bigcorp.com",
-     "Our entire team cannot access the dashboard since 9 AM EST. Getting 502 errors. Enterprise plan."],
+     "Our entire team cannot access the dashboard since 9 AM EST. Getting 502 errors. We're on the Enterprise plan and this is costing us revenue."],
+    ["API rate limits killing our integration", "Dev Team", "dev@acme-corp.com",
+     "We're hitting 429s on the /events endpoint every few minutes even though we're well within the published limits. Started after yesterday's deploy."],
     ["How do I add team members?", "Priya Patel", "priya@startup.io",
-     "I'm trying to invite my colleagues to our workspace but can't find where to do it."],
+     "I'm trying to invite my colleagues to our workspace but can't find the option in Settings."],
+    ["Want to cancel — switching to competitor", "James Park", "jpark@bloomretail.com",
+     "We've decided to go with a different vendor. Please cancel our annual subscription and process a prorated refund for the remaining months."],
 ]
 
 def route_and_draft(subject: str, name: str, email: str, body: str, model: str):
@@ -647,7 +651,24 @@ with gr.Blocks(title="Agent Use Cases") as demo:
         )
 
     with gr.Tab("🎫 Support Ticket Router"):
-        gr.Markdown("Paste a customer ticket → routed to the right team with a ready-to-send draft reply.")
+        gr.Markdown(
+            "Paste a customer ticket → classified, routed to the right team, and a ready-to-send "
+            "first-response draft generated in two API calls.\n\n"
+            "**Built for:** support ops teams replacing manual triage queues."
+        )
+        with gr.Accordion("Routing logic & teams", open=True):
+            gr.Markdown(
+                "**Step 1 — Classify:** ticket type · urgency · team · confidence\n"
+                "**Step 2 — Draft:** team-specific first-response email + internal note\n\n"
+                "| Team | Handles | Escalates when |\n"
+                "|------|---------|----------------|\n"
+                "| **Billing** | Charges, invoices, refunds | Dispute >$500 or cancellation |\n"
+                "| **Engineering** | Bugs, outages, API issues | Outage, data loss, security |\n"
+                "| **Account Management** | Retention, upgrades, enterprise | Enterprise account |\n"
+                "| **Product** | Feature requests, feedback | Blocking issue |\n"
+                "| **General Support** | How-to, onboarding | Access or billing change |\n\n"
+                "**Urgency:** 🔴 critical · 🟠 high · 🟡 medium · 🟢 low"
+            )
         with gr.Row():
             with gr.Column():
                 tkt_subject = gr.Textbox(label="Subject")
