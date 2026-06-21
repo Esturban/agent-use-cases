@@ -4,7 +4,10 @@ import os
 import sys
 
 import gradio as gr
+from dotenv import find_dotenv, load_dotenv
+from openai import OpenAI
 
+load_dotenv(find_dotenv(raise_error_if_not_found=False))
 
 sys.path.insert(0, os.path.dirname(__file__))
 from src.schema import DraftReply, TicketClassification  # noqa: E402
@@ -105,11 +108,6 @@ def route_and_draft(subject: str, customer_name: str, customer_email: str, body:
         return err, "", "", "", "", "", "", ""
 
     try:
-        from dotenv import find_dotenv, load_dotenv
-from openai import OpenAI
-
-load_dotenv(find_dotenv(raise_error_if_not_found=False))
-
         client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=api_key)
 
         clf: TicketClassification = (

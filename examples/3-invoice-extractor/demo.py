@@ -9,7 +9,7 @@ load_dotenv(find_dotenv(raise_error_if_not_found=False))
 
 
 sys.path.insert(0, os.path.dirname(__file__))
-from src.schema import Invoice
+from src.schema import Invoice  # noqa: E402
 
 SYSTEM_PROMPT = (
     "You are an invoice parsing assistant. Extract structured data from invoice text. "
