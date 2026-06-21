@@ -27,9 +27,8 @@ SYSTEM_PROMPT = (
 )
 
 MODELS = [
-    "openai/gpt-4o-mini",
-    "openai/gpt-4.1-nano",
     "openai/gpt-5.4-nano",
+    "openai/gpt-4.1-nano",
     "openai/gpt-4o",
     "anthropic/claude-haiku-4-5",
     "google/gemini-flash-1.5",

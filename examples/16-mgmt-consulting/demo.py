@@ -21,7 +21,8 @@ SYSTEM_PROMPT = (
     "3. Assign quadrant — effort=low+impact=high → quick_win; effort=high+impact=high → major_project; "
     "effort=low+impact=low → fill_in; effort=high+impact=low → thankless_task. "
     "Treat medium effort as low, medium impact as high.\n"
-    "4. Estimate annual saving in SAR where the brief provides enough data to support a credible estimate.\n"
+    "4. Estimate annual saving in SAR (Saudi Riyals — ALWAYS use SAR, never GBP, USD, or any other currency) "
+    "where the brief provides enough data to support a credible estimate.\n"
     "5. List 3-5 concrete, actionable implementation steps.\n"
     "Sort quick_wins first. Write a 3-4 sentence executive_summary for a C-suite audience "
     "and a prioritization_note that recommends exactly where to start and why."
@@ -137,16 +138,26 @@ def run_assessment(brief: str, model: str):
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
         raise gr.Error("OPENAI_API_KEY is not set — set OPENAI_API_KEY in your shell environment.")
-    client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=api_key)
-    completion = client.beta.chat.completions.parse(
-        model=model,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": brief},
-        ],
-        response_format=CostOptimizationReport,
-    )
-    r: CostOptimizationReport = completion.choices[0].message.parsed
+    try:
+        client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=api_key)
+        completion = client.beta.chat.completions.parse(
+            model=model,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": brief},
+            ],
+            response_format=CostOptimizationReport,
+        )
+        r: CostOptimizationReport = completion.choices[0].message.parsed
+        if r is None:
+            raise gr.Error(
+                f"Model '{model}' did not return structured output. "
+                "Switch to openai/gpt-5.4-nano or openai/gpt-4.1-nano."
+            )
+    except gr.Error:
+        raise
+    except Exception as exc:
+        raise gr.Error(f"API error: {exc}") from exc
     saving = r.total_addressable_saving or "Not quantified"
     return (
         saving,
