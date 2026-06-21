@@ -321,6 +321,7 @@ with gr.Blocks(title="Board Pack Reviewer") as demo:
                 examples=[[SAMPLE_PACK_1], [SAMPLE_PACK_2], [SAMPLE_PACK_3]],
                 inputs=[pack_input],
                 label="Sample board packs — click to load",
+                cache_examples=False,
             )
 
         with gr.Column(scale=3):
