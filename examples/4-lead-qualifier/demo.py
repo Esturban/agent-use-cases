@@ -24,6 +24,7 @@ reasoning must explain the score in 1-2 sentences citing the criteria.
 Never invent data not present in the lead description."""
 
 MODELS = [
+    "openai/gpt-4.1-nano",
     "openai/gpt-4o-mini",
     "anthropic/claude-haiku-4-5",
     "google/gemini-flash-1.5",
@@ -35,6 +36,7 @@ TIER_EMOJI = {"hot": "🔥 hot", "warm": "🟡 warm", "cold": "❄️ cold"}
 HOT = "Company: Meridian Payments | Industry: FinTech | Size: 120 employees | Contact: Sarah Chen, VP of Operations | Notes: Team reconciling invoices manually across 3 spreadsheets, ~15 hours/week. Pay ~$8k/month in SaaS tools, looking to consolidate before Q3. Budget $2k–4k/month."
 WARM = "Company: BloomRetail | Industry: E-commerce | Size: 35 employees | Contact: James Park, Head of Marketing | Notes: Struggling with inventory data across Shopify and their WMS. No dedicated ops person. Budget unclear but interested in a demo."
 COLD = "Company: Riverside Law Group | Industry: Legal | Size: 12 attorneys | Contact: Office Manager | Notes: Looking for a better way to track billable hours. Currently using spreadsheets. Very small team, no budget discussed."
+REAL = "Company: Coreflow | Industry: SaaS (HR tech) | Size: 210 employees | Contact: Marcus Reid, COO | Notes: 4-person ops team spending 20hrs/week manually moving data between Workday, Salesforce, and their billing system. Current SaaS spend ~$14k/month. Actively evaluating automation vendors before their Series C closes in 90 days."
 
 
 def qualify(lead_text: str, model: str):
@@ -63,26 +65,54 @@ def qualify(lead_text: str, model: str):
 
 
 with gr.Blocks(title="Lead Qualifier") as demo:
-    gr.Markdown("## Lead Qualifier\nPaste a lead description and score it against your ICP.")
+    gr.Markdown(
+        "## 🎯 Lead Qualifier\n"
+        "Paste inbound lead notes → the model scores them against a hardcoded ICP and returns a "
+        "tier, criteria breakdown, and recommended next action.\n\n"
+        "**Built for:** sales teams, BDRs, and RevOps — anyone who needs a first-pass triage "
+        "before burning a rep's time on a cold prospect."
+    )
+
+    with gr.Accordion("ICP & Scoring Rubric", open=True):
+        gr.Markdown(
+            "The model scores every lead against **five criteria**. "
+            "Criteria met vs. missed are returned explicitly so you can audit the reasoning.\n\n"
+            "| Criterion | Target |\n"
+            "|-----------|--------|\n"
+            "| **Industry** | SaaS · FinTech · E-commerce |\n"
+            "| **Company size** | 50–500 employees |\n"
+            "| **Pain point** | Manual workflows · Data silos · Compliance burden |\n"
+            "| **Buyer role** | VP Operations · CFO · CTO |\n"
+            "| **Budget signal** | >$5k/month existing SaaS spend |\n\n"
+            "**Score → Tier:** `8–10` = 🔥 Hot (3+ criteria + budget) · "
+            "`5–7` = 🟡 Warm (2 criteria or budget unclear) · "
+            "`1–4` = ❄️ Cold (fewer than 2 criteria)\n\n"
+            "_The model never invents signals — if a criterion isn't mentioned in the notes, it counts as missed._"
+        )
 
     with gr.Row():
         with gr.Column():
-            lead_input = gr.Textbox(label="Lead description", lines=10)
+            lead_input = gr.Textbox(
+                label="Lead description",
+                lines=10,
+                placeholder="Paste CRM notes, a form submission, or any lead context here…",
+            )
             model_dd = gr.Dropdown(choices=MODELS, value=MODELS[0], label="Model")
             run_btn = gr.Button("Qualify Lead", variant="primary")
             gr.Examples(
-                examples=[[HOT], [WARM], [COLD]],
+                examples=[[HOT], [WARM], [COLD], [REAL]],
                 inputs=[lead_input],
-                label="Sample leads",
+                label="Sample leads — click to load",
             )
 
         with gr.Column():
+            gr.Markdown("#### Qualification result")
             score_out = gr.Number(label="ICP Score (1–10)")
-            tier_out = gr.Textbox(label="Tier")
-            met_out = gr.Textbox(label="Criteria met")
-            missed_out = gr.Textbox(label="Criteria missed")
-            action_out = gr.Textbox(label="Recommended action")
-            reasoning_out = gr.Textbox(label="Reasoning", lines=3)
+            tier_out = gr.Textbox(label="Tier", interactive=False)
+            met_out = gr.Textbox(label="Criteria met", lines=3, interactive=False)
+            missed_out = gr.Textbox(label="Criteria missed", lines=3, interactive=False)
+            action_out = gr.Textbox(label="Recommended action", interactive=False)
+            reasoning_out = gr.Textbox(label="Why this score", lines=3, interactive=False)
 
     run_btn.click(
         qualify,

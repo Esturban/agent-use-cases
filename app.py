@@ -100,6 +100,7 @@ class LeadScore(BaseModel):
 # ── Shared ───────────────────────────────────────────────────────────────────
 
 MODELS = [
+    "openai/gpt-4.1-nano",
     "openai/gpt-4o-mini",
     "anthropic/claude-haiku-4-5",
     "google/gemini-flash-1.5",
@@ -426,6 +427,7 @@ reasoning must explain the score in 1-2 sentences. Never invent data not present
 
 LEAD_SAMPLES = [
     "Company: Meridian Payments | Industry: FinTech | Size: 120 employees | Contact: Sarah Chen, VP of Operations | Notes: Team reconciling invoices manually across 3 spreadsheets, ~15 hours/week. Pay ~$8k/month in SaaS tools, looking to consolidate before Q3. Budget $2k–4k/month.",
+    "Company: Coreflow | Industry: SaaS (HR tech) | Size: 210 employees | Contact: Marcus Reid, COO | Notes: 4-person ops team spending 20hrs/week manually moving data between Workday, Salesforce, and their billing system. Current SaaS spend ~$14k/month. Actively evaluating automation vendors before their Series C closes in 90 days.",
     "Company: BloomRetail | Industry: E-commerce | Size: 35 employees | Contact: James Park, Head of Marketing | Notes: Struggling with inventory data across Shopify and their WMS. No dedicated ops person. Budget unclear but interested in a demo.",
     "Company: Riverside Law Group | Industry: Legal | Size: 12 attorneys | Contact: Office Manager | Notes: Looking for a better way to track billable hours. Currently using spreadsheets. Very small team, no budget discussed.",
 ]
@@ -606,7 +608,24 @@ with gr.Blocks(title="Agent Use Cases") as demo:
                       [tkt_urgency, tkt_team, tkt_conf, tkt_reason, tkt_ds, tkt_db, tkt_note, tkt_esc])
 
     with gr.Tab("🎯 Lead Qualifier"):
-        gr.Markdown("Paste a lead description → ICP fit score, tier, and recommended next action.")
+        gr.Markdown(
+            "Paste inbound lead notes → ICP fit score, tier, and recommended next action.\n\n"
+            "**Built for:** sales teams and RevOps who need a first-pass triage before a rep touches a lead."
+        )
+        with gr.Accordion("ICP & Scoring Rubric", open=True):
+            gr.Markdown(
+                "The model scores every lead against **five criteria**. "
+                "Criteria met vs. missed are returned explicitly so you can audit the reasoning.\n\n"
+                "| Criterion | Target |\n"
+                "|-----------|--------|\n"
+                "| **Industry** | SaaS · FinTech · E-commerce |\n"
+                "| **Company size** | 50–500 employees |\n"
+                "| **Pain point** | Manual workflows · Data silos · Compliance burden |\n"
+                "| **Buyer role** | VP Operations · CFO · CTO |\n"
+                "| **Budget signal** | >$5k/month existing SaaS spend |\n\n"
+                "**Score → Tier:** `8–10` = 🔥 Hot · `5–7` = 🟡 Warm · `1–4` = ❄️ Cold\n\n"
+                "_The model never invents signals — if a criterion isn't mentioned in the notes, it counts as missed._"
+            )
         with gr.Row():
             with gr.Column():
                 lead_text = gr.Textbox(label="Lead description", lines=10, placeholder="Paste lead notes here…")
