@@ -1,12 +1,13 @@
 import os
+import sys
 
 import gradio as gr
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from src.schema import ContractReview
-
 load_dotenv()
+sys.path.insert(0, os.path.dirname(__file__))
+from src.schema import ContractReview  # noqa: E402
 
 SYSTEM_PROMPT = (
     "You are a senior commercial lawyer reviewing a contract on behalf of a client. "

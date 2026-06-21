@@ -1,12 +1,13 @@
 import os
+import sys
 
 import gradio as gr
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from src.schema import LeadScore
-
 load_dotenv()
+sys.path.insert(0, os.path.dirname(__file__))
+from src.schema import LeadScore  # noqa: E402
 
 SYSTEM = """You are a sales qualification assistant. Score inbound leads against this ICP rubric.
 
