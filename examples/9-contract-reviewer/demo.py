@@ -52,10 +52,43 @@ This Agreement shall remain in effect for two (2) years from the date of signing
 4. Governing Law
 This Agreement shall be governed by the laws of California."""
 
+SAMPLE_SAAS = """SOFTWARE-AS-A-SERVICE SUBSCRIPTION AGREEMENT
+
+1. License Grant
+Provider grants Customer a non-exclusive, non-transferable license to use the Platform during the Subscription Term.
+
+2. Fees & Payment
+Customer shall pay all fees within 30 days of invoice. Provider may increase fees by up to 20% annually with 30 days' notice.
+Provider may suspend access for late payment with no cure period.
+
+3. Data & Privacy
+Customer data processed by the Platform remains Customer's property.
+Provider may use aggregated, anonymised Customer data for product improvement and benchmarking without restriction.
+
+4. Uptime & SLA
+Provider targets 99% uptime. Credits for downtime are the Customer's sole remedy.
+Credits shall not exceed 5% of monthly fees.
+
+5. Intellectual Property
+All improvements, configurations, and customisations made by or for Customer become Provider's property.
+
+6. Limitation of Liability
+Provider's liability is capped at 1 month of fees paid. Provider is not liable for data loss, lost profits, or consequential damages.
+
+7. Termination
+Either party may terminate with 90 days' notice. Provider may terminate immediately for any material breach.
+Upon termination, Customer has 14 days to export data before permanent deletion.
+
+8. Governing Law
+This Agreement is governed by the laws of England and Wales."""
+
 
 RISK_EMOJI = {"high": "🔴 High", "medium": "🟡 Medium", "low": "🟢 Low"}
 
 MODELS = [
+    "openai/gpt-5.4-nano",
+    "minimax/minimax-m3",
+    "openai/gpt-4.1-nano",
     "openai/gpt-4o-mini",
     "anthropic/claude-haiku-4-5",
     "google/gemini-flash-1.5",
@@ -132,16 +165,32 @@ def review_contract(contract_text: str, model: str):
 
 with gr.Blocks(title="Contract Reviewer") as demo:
     gr.Markdown(
-        "# Contract Reviewer\n"
-        "Paste contract text to receive risk findings, missing protections, and negotiation points."
+        "## ⚖️ Contract Reviewer\n"
+        "Paste any contract → the model identifies risk clauses, missing standard protections, "
+        "and a prioritised negotiation playbook — every finding cites the exact clause it came from.\n\n"
+        "**Built for:** legal teams, procurement managers, and founders reviewing vendor or client "
+        "agreements before signing."
     )
+
+    with gr.Accordion("How it works", open=True):
+        gr.Markdown(
+            "The model acts as a senior commercial lawyer and outputs three structured sections:\n\n"
+            "| Output | What it tells you |\n"
+            "|--------|-------------------|\n"
+            "| **Risk findings** | Severity · category · exact clause reference · issue · implication · suggested redline |\n"
+            "| **Missing protections** | Standard clauses absent from this contract and why they matter |\n"
+            "| **Negotiation playbook** | Ranked must-have / should-have / nice-to-have with current vs. target positions |\n\n"
+            "**Samples included:** a one-sided Professional Services Agreement, a bare-bones NDA, "
+            "and a vendor-friendly SaaS subscription — each surfaces different risk patterns.\n\n"
+            "_Severity levels: CRITICAL (sign nothing) · HIGH (must redline) · MEDIUM (negotiate) · LOW (flag for record)_"
+        )
 
     with gr.Row():
         with gr.Column(scale=2):
             contract_input = gr.Textbox(
-                label="Contract Text",
-                lines=14,
-                placeholder="Paste contract text here...",
+                label="Contract text",
+                lines=16,
+                placeholder="Paste contract text here…",
             )
             model_dropdown = gr.Dropdown(
                 choices=MODELS,
@@ -149,21 +198,20 @@ with gr.Blocks(title="Contract Reviewer") as demo:
                 label="Model",
             )
             review_btn = gr.Button("Review Contract", variant="primary")
-
             gr.Examples(
-                examples=[[SAMPLE_SERVICES], [SAMPLE_NDA]],
+                examples=[[SAMPLE_SERVICES], [SAMPLE_NDA], [SAMPLE_SAAS]],
                 inputs=[contract_input],
-                label="Sample Contracts",
+                label="Sample contracts — click to load",
             )
 
         with gr.Column(scale=3):
-            overall_risk_out = gr.Textbox(label="Overall Risk", interactive=False)
+            overall_risk_out = gr.Textbox(label="Overall risk", interactive=False)
             executive_summary_out = gr.Textbox(
-                label="Executive Summary", lines=3, interactive=False
+                label="Executive summary", lines=4, interactive=False
             )
-            risk_findings_out = gr.Markdown(label="Risk Findings")
-            missing_protections_out = gr.Markdown(label="Missing Protections")
-            negotiation_points_out = gr.Markdown(label="Negotiation Points")
+            risk_findings_out = gr.Markdown(label="Risk findings")
+            missing_protections_out = gr.Markdown(label="Missing protections")
+            negotiation_points_out = gr.Markdown(label="Negotiation playbook")
 
     review_btn.click(
         fn=review_contract,

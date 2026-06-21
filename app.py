@@ -295,6 +295,36 @@ This Agreement shall remain in effect for two (2) years from the date of signing
 
 4. Governing Law
 This Agreement shall be governed by the laws of California.""",
+
+    """SOFTWARE-AS-A-SERVICE SUBSCRIPTION AGREEMENT
+
+1. License Grant
+Provider grants Customer a non-exclusive, non-transferable license to use the Platform during the Subscription Term.
+
+2. Fees & Payment
+Customer shall pay all fees within 30 days of invoice. Provider may increase fees by up to 20% annually with 30 days' notice.
+Provider may suspend access for late payment with no cure period.
+
+3. Data & Privacy
+Customer data processed by the Platform remains Customer's property.
+Provider may use aggregated, anonymised Customer data for product improvement and benchmarking without restriction.
+
+4. Uptime & SLA
+Provider targets 99% uptime. Credits for downtime are the Customer's sole remedy.
+Credits shall not exceed 5% of monthly fees.
+
+5. Intellectual Property
+All improvements, configurations, and customisations made by or for Customer become Provider's property.
+
+6. Limitation of Liability
+Provider's liability is capped at 1 month of fees paid. Provider is not liable for data loss, lost profits, or consequential damages.
+
+7. Termination
+Either party may terminate with 90 days' notice. Provider may terminate immediately for any material breach.
+Upon termination, Customer has 14 days to export data before permanent deletion.
+
+8. Governing Law
+This Agreement is governed by the laws of England and Wales.""",
 ]
 
 RISK_LABEL = {"high": "🔴 High", "medium": "🟡 Medium", "low": "🟢 Low"}
@@ -584,7 +614,20 @@ with gr.Blocks(title="Agent Use Cases") as demo:
         )
 
     with gr.Tab("⚖️ Contract Reviewer"):
-        gr.Markdown("Paste contract text → risk findings, missing protections, and negotiation playbook.")
+        gr.Markdown(
+            "Paste any contract → risk findings, missing protections, and a prioritised negotiation "
+            "playbook — every finding cites the exact clause it came from.\n\n"
+            "**Built for:** legal teams, procurement managers, and founders reviewing agreements before signing."
+        )
+        with gr.Accordion("How it works", open=True):
+            gr.Markdown(
+                "| Output | What it tells you |\n"
+                "|--------|-------------------|\n"
+                "| **Risk findings** | Severity · category · exact clause reference · issue · implication · suggested redline |\n"
+                "| **Missing protections** | Standard clauses absent from this contract and why they matter |\n"
+                "| **Negotiation playbook** | Ranked must-have / should-have / nice-to-have with current vs. target positions |\n\n"
+                "_Severity levels: CRITICAL · HIGH · MEDIUM · LOW_"
+            )
         with gr.Row():
             with gr.Column(scale=2):
                 con_text = gr.Textbox(label="Contract text", lines=14, placeholder="Paste contract here…")
