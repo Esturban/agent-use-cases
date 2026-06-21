@@ -4,9 +4,7 @@ import os
 import sys
 
 import gradio as gr
-from dotenv import load_dotenv
 
-load_dotenv()
 
 sys.path.insert(0, os.path.dirname(__file__))
 from src.schema import DraftReply, TicketClassification  # noqa: E402
@@ -101,13 +99,16 @@ SAMPLES = [
 
 
 def route_and_draft(subject: str, customer_name: str, customer_email: str, body: str, model: str):
-    api_key = os.environ.get("OPENROUTER_API_KEY", "")
+    api_key = os.environ.get("OPENAI_API_KEY", "")
     if not api_key:
-        err = "OPENROUTER_API_KEY is not set."
+        err = "OPENAI_API_KEY is not set."
         return err, "", "", "", "", "", "", ""
 
     try:
-        from openai import OpenAI
+        from dotenv import load_dotenv
+from openai import OpenAI
+
+load_dotenv()
 
         client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=api_key)
 

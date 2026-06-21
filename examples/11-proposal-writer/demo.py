@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 load_dotenv()
+
 sys.path.insert(0, os.path.dirname(__file__))
 from src.schema import Proposal, ProposalOutline  # noqa: E402
 
@@ -127,9 +128,9 @@ def _format_outline(outline: ProposalOutline) -> str:
 def write_proposal(rfp_text: str, model: str):
     if not rfp_text.strip():
         return "", "", "", "", "", "", "", ""
-    api_key = os.environ.get("OPENROUTER_API_KEY")
+    api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
-        raise gr.Error("OPENROUTER_API_KEY is not set — add it to your .env file.")
+        raise gr.Error("OPENAI_API_KEY is not set — set OPENAI_API_KEY in your shell environment.")
     client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=api_key)
 
     outline_completion = client.beta.chat.completions.parse(

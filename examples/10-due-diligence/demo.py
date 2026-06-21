@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 load_dotenv()
+
 sys.path.insert(0, os.path.dirname(__file__))
 from src.schema import DDReport, DocumentFindings  # noqa: E402
 
@@ -130,9 +131,9 @@ def _format_risks(report: DDReport) -> str:
 
 
 def run_dd(d1n, d1t, d2n, d2t, d3n, d3t, d4n, d4t, model):
-    api_key = os.environ.get("OPENROUTER_API_KEY", "")
+    api_key = os.environ.get("OPENAI_API_KEY", "")
     if not api_key:
-        return "Set OPENROUTER_API_KEY env var", "", "", "", ""
+        return "Set OPENAI_API_KEY env var", "", "", "", ""
     docs = {n: t for n, t in [(d1n, d1t), (d2n, d2t), (d3n, d3t), (d4n, d4t)] if n.strip() and t.strip()}
     if not docs:
         return "No documents provided.", "", "", "", ""

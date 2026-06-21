@@ -8,6 +8,7 @@ from openai import OpenAI
 load_dotenv()
 
 
+
 def add(x: int, y: int) -> int:
     return x + y
 
@@ -71,9 +72,9 @@ SAMPLE_QUESTIONS = [
 
 
 def run_agent(question: str, model: str) -> tuple[str, str]:
-    api_key = os.environ.get("OPENROUTER_API_KEY")
+    api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
-        return "**Error:** `OPENROUTER_API_KEY` environment variable is not set.", ""
+        return "**Error:** `OPENAI_API_KEY` environment variable is not set.", ""
 
     client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=api_key)
     messages = [

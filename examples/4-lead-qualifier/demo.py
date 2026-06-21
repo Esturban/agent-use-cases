@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 load_dotenv()
+
 sys.path.insert(0, os.path.dirname(__file__))
 from src.schema import LeadScore  # noqa: E402
 
@@ -46,9 +47,9 @@ REAL = "Company: Coreflow | Industry: SaaS (HR tech) | Size: 210 employees | Con
 
 
 def qualify(lead_text: str, model: str):
-    api_key = os.environ.get("OPENROUTER_API_KEY")
+    api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
-        raise gr.Error("OPENROUTER_API_KEY is not set.")
+        raise gr.Error("OPENAI_API_KEY is not set.")
 
     client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=api_key)
     completion = client.beta.chat.completions.parse(

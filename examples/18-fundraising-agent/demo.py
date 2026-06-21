@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 load_dotenv()
+
 sys.path.insert(0, os.path.dirname(__file__))
 from src.schema import FundraisingPackage  # noqa: E402
 
@@ -106,9 +107,9 @@ def _format_materials(m) -> str:
 def generate_fundraising(profile: str, model: str):
     if not profile.strip():
         return "", "", "", "", ""
-    api_key = os.environ.get("OPENROUTER_API_KEY")
+    api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
-        raise gr.Error("OPENROUTER_API_KEY is not set — add it to your .env file.")
+        raise gr.Error("OPENAI_API_KEY is not set — set OPENAI_API_KEY in your shell environment.")
     client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=api_key)
     completion = client.beta.chat.completions.parse(
         model=model,

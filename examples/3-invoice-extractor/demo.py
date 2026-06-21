@@ -7,6 +7,7 @@ from openai import OpenAI
 
 load_dotenv()
 
+
 sys.path.insert(0, os.path.dirname(__file__))
 from src.schema import Invoice
 
@@ -83,7 +84,7 @@ def extract_invoice(invoice_text: str, model: str):
 
     client = OpenAI(
         base_url="https://openrouter.ai/api/v1",
-        api_key=os.environ["OPENROUTER_API_KEY"],
+        api_key=os.environ["OPENAI_API_KEY"],
     )
 
     completion = client.beta.chat.completions.parse(
