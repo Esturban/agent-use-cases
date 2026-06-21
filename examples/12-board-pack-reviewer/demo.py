@@ -4,10 +4,10 @@ import os
 import sys
 
 import gradio as gr
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 from openai import OpenAI
 
-load_dotenv()
+load_dotenv(find_dotenv(raise_error_if_not_found=False))
 
 sys.path.insert(0, os.path.dirname(__file__))
 from src.schema import DirectorBriefing  # noqa: E402

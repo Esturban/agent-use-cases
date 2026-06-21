@@ -105,10 +105,10 @@ def route_and_draft(subject: str, customer_name: str, customer_email: str, body:
         return err, "", "", "", "", "", "", ""
 
     try:
-        from dotenv import load_dotenv
+        from dotenv import find_dotenv, load_dotenv
 from openai import OpenAI
 
-load_dotenv()
+load_dotenv(find_dotenv(raise_error_if_not_found=False))
 
         client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=api_key)
 

@@ -4,10 +4,10 @@ import os
 import sys
 
 import gradio as gr
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 from openai import OpenAI
 
-load_dotenv()
+load_dotenv(find_dotenv(raise_error_if_not_found=False))
 
 sys.path.insert(0, os.path.dirname(__file__))
 from src.schema import Proposal, ProposalOutline  # noqa: E402
@@ -45,67 +45,84 @@ MODELS = [
     "mistralai/mistral-7b-instruct",
 ]
 
-SAMPLE_RFP = """REQUEST FOR PROPOSAL — DIGITAL TRANSFORMATION ADVISORY
+SAMPLE_RFP = """REQUEST FOR PROPOSAL — ENTERPRISE DIGITAL TRANSFORMATION ADVISORY
 
-Issuing organisation: MidlandsGrid PLC (energy distribution, 2,400 employees)
-Submission deadline: 30 July 2025
-Project value: GBP 1.2m — 18-month engagement
+Issuing organisation: Saudi Electricity Company (SEC)
+Reference: SEC-ICT-2025-0047
+Submission deadline: 15 September 2025
+Project value: SAR 18,000,000 — 24-month engagement
+Language: Responses must be submitted in both Arabic and English
 
 BACKGROUND
-MidlandsGrid is replacing its 15-year-old SAP ECC platform with SAP S/4HANA. The legacy system
-cannot support real-time grid operations data or the renewable energy forecasting modules required
-under the UK Energy Act 2023. The project must be complete before the statutory reporting
-deadline of 1 April 2027.
+SEC operates the national power grid serving 10.5 million customers across the Kingdom of Saudi Arabia.
+The company is executing its Digital Transformation Roadmap 2030, aligned with the National
+Transformation Programme and Vision 2030 objectives. The current Oracle EBS financial management
+system (deployed 2009) cannot support real-time operational analytics, predictive maintenance modules,
+or ZATCA Phase 2 e-invoicing compliance required by Q4 2026.
+
+SEC seeks an advisory partner to lead the transition to SAP S/4HANA Public Cloud and implement a
+unified data platform integrating generation, transmission, and distribution operations.
 
 SCOPE OF WORK
-1. Programme management and governance framework
-2. Business process re-engineering for Finance, Operations, and Asset Management
-3. Data migration strategy (estimated 12TB, 8 source systems)
-4. Change management and training (2,400 end users)
-5. Integration design for 14 third-party systems
+1. Programme governance and PMO establishment
+2. Business process re-engineering for Finance, Procurement, and Asset Management (11,000 assets)
+3. Data migration strategy (estimated 18TB across 6 legacy systems, including Arabic-language data)
+4. Change management and capability building (14,000 end users across 12 regions)
+5. ZATCA Phase 2 e-invoicing integration and SDAIA data governance compliance
+6. Integration architecture for 22 third-party operational systems
 
-MANDATORY REQUIREMENTS (pass/fail)
-M1. ISO 27001 certified or equivalent evidence of information security management
-M2. Minimum 3 completed SAP S/4HANA implementations in regulated utilities
-M3. UK-based delivery team for all client-facing activities
-M4. Named Project Director with 10+ years SAP transformation experience
+MANDATORY REQUIREMENTS (pass/fail — automatic disqualification if not met)
+M1. Valid NCA (National Cybersecurity Authority) Compliance Certificate or equivalent evidence
+M2. SDAIA-approved data residency — all data must remain within the Kingdom of Saudi Arabia
+M3. Minimum 3 completed SAP S/4HANA implementations in regulated energy or utilities in GCC or MENA
+M4. Named Saudi-registered legal entity as prime contractor
+M5. Nitaqat Platinum or Platinum+ rating (minimum 35% Saudi national employees on engagement)
+M6. Named Programme Director with 12+ years ERP transformation experience
 
-EVALUATION CRITERIA (weighted)
-Technical approach: 35%
-Relevant experience: 30%
-Commercial: 25%
-Social value: 10%
+EVALUATION CRITERIA (weighted scoring)
+Technical approach and methodology: 40%
+Relevant GCC/MENA experience and reference projects: 30%
+Commercial and value for money: 20%
+Local content and Saudization plan: 10%
 
 SUBMISSION FORMAT
-Executive summary (max 2 pages), technical approach, team CVs, case studies, commercial schedule
+Arabic executive summary (max 3 pages) + English technical response, team CVs, 3 GCC/MENA reference
+case studies, commercial schedule in SAR, Saudization plan with Nitaqat evidence, IKTVA commitment letter
 """
 
-SAMPLE_RFP_2 = """REQUEST FOR PROPOSAL — COMMERCIAL DUE DILIGENCE ADVISORY
+SAMPLE_RFP_2 = """REQUEST FOR PROPOSAL — STRATEGIC ADVISORY: TOURISM INVESTMENT ATTRACTION
 
-Issuing organisation: Apex Growth Partners (mid-market PE fund)
-Target: SaaS business in HR tech, GBP 45m EV
-Deadline: 18 July 2025
+Issuing organisation: Royal Commission for AlUla (RCU)
+Reference: RCU-STRAT-2025-0012
+Submission deadline: 30 August 2025
+Project value: SAR 6,500,000 — 12-month engagement
 
 BACKGROUND
-Apex is evaluating a Series C investment in a UK-based HR onboarding automation platform.
-They require a commercial due diligence advisor to validate the investment thesis and identify risks
-before exclusivity is signed. The assignment must be completed within 3 weeks.
+AlUla is being developed as Saudi Arabia's premier cultural and heritage tourism destination under
+Vision 2030. RCU has committed to welcoming 250,000 visitors by 2026 and 2,000,000 by 2035.
+To reach these targets, RCU requires a strategic advisory partner to design and execute an
+international investment attraction programme targeting hospitality, entertainment, and eco-tourism
+operators across Europe, Asia, and North America.
 
-SCOPE
-1. Market sizing and growth validation (TAM, SAM, growth drivers)
-2. Competitive landscape — current and emerging threats
-3. Customer reference interviews (minimum 8 customers)
-4. Revenue quality and churn analysis
-5. Management team assessment
-6. Red flag identification and risk register
+SCOPE OF WORK
+1. International investor targeting — identify and qualify 50+ target operators and investors
+2. Investment proposition design — develop RCU's value proposition for each investor segment
+3. Roadshow execution — organise 3 international roadshows (London, Singapore, New York)
+4. Anchor tenant negotiation support — advisory on term sheets for 5 priority development sites
+5. Pipeline reporting — monthly investor pipeline dashboard for RCU senior leadership
+6. All deliverables to be produced in Arabic and English
 
 MANDATORY REQUIREMENTS
-M1. Previous CDD experience in B2B SaaS or HR tech
-M2. Ability to start within 5 working days of award
-M3. Named senior partner as day-to-day lead
+M1. Previous tourism investment attraction or destination advisory experience in GCC, MENA,
+    or a comparable emerging market context
+M2. Demonstrated relationships with international hotel operators in the 5-star and luxury segment
+M3. Arabic-capable senior advisor named and committed to the engagement team
+M4. Ability to mobilise fully within 10 working days of contract award
 
 EVALUATION CRITERIA
-Quality of approach: 40% | Track record: 35% | Commercial: 25%
+Strategic approach and creativity: 35%
+Relevant experience and investor network: 40%
+Commercial and value for money: 25%
 """
 
 
@@ -202,8 +219,10 @@ with gr.Blocks(title="RFP Proposal Writer") as demo:
             "| **Commercial** | Pricing structure and value drivers |\n"
             "| **Key differentiators** | 3-5 bullets for the cover slide |\n"
             "| **Compliance statement** | Explicit confirmation of every mandatory requirement |\n\n"
-            "_Sample 1: MidlandsGrid PLC — SAP S/4HANA digital transformation, GBP 1.2m._\n"
-            "_Sample 2: Apex Growth Partners — commercial due diligence for a SaaS PE deal._"
+            "_Sample 1: Saudi Electricity Company (SEC) — SAP S/4HANA digital transformation, SAR 18m. "
+            "Covers NCA compliance, SDAIA data residency, ZATCA e-invoicing, and Nitaqat requirements._\n\n"
+            "_Sample 2: Royal Commission for AlUla (RCU) — Vision 2030 tourism investment attraction "
+            "advisory, SAR 6.5m. International roadshows, anchor tenant negotiation, Arabic/English deliverables._"
         )
 
     with gr.Row():

@@ -2,10 +2,10 @@ import json
 import os
 
 import gradio as gr
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 from openai import OpenAI
 
-load_dotenv()
+load_dotenv(find_dotenv(raise_error_if_not_found=False))
 
 
 
