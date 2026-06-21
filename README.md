@@ -1,3 +1,15 @@
+---
+title: Agent Use Cases
+emoji: 🤖
+colorFrom: blue
+colorTo: indigo
+sdk: gradio
+sdk_version: "4.0.0"
+app_file: app.py
+python_version: "3.11"
+pinned: false
+---
+
 # Agent Use Cases
 
 Standalone Python examples of AI agents solving real enterprise problems. Each example is self-contained — a typed schema, a workflow, and two or three scenarios you can run immediately or open directly in Colab.
