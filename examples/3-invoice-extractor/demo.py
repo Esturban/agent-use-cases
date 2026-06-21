@@ -2,7 +2,10 @@ import os
 import sys
 
 import gradio as gr
+from dotenv import load_dotenv
 from openai import OpenAI
+
+load_dotenv()
 
 sys.path.insert(0, os.path.dirname(__file__))
 from src.schema import Invoice

@@ -4,6 +4,9 @@ import os
 import sys
 
 import gradio as gr
+from dotenv import load_dotenv
+
+load_dotenv()
 
 sys.path.insert(0, os.path.dirname(__file__))
 from src.schema import DraftReply, TicketClassification  # noqa: E402

@@ -1,9 +1,12 @@
 import os
 
 import gradio as gr
+from dotenv import load_dotenv
 from openai import OpenAI
 
 from src.schema import ContractReview
+
+load_dotenv()
 
 SYSTEM_PROMPT = (
     "You are a senior commercial lawyer reviewing a contract on behalf of a client. "

@@ -3,9 +3,12 @@
 import os
 
 import gradio as gr
+from dotenv import load_dotenv
 from openai import OpenAI
 
 from src.schema import ResumeScore
+
+load_dotenv()
 
 SYSTEM_PROMPT = """You are a senior technical recruiter screening candidates for a backend engineering role.
 

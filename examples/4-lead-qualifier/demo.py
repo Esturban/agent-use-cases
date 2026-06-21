@@ -1,9 +1,12 @@
 import os
 
 import gradio as gr
+from dotenv import load_dotenv
 from openai import OpenAI
 
 from src.schema import LeadScore
+
+load_dotenv()
 
 SYSTEM = """You are a sales qualification assistant. Score inbound leads against this ICP rubric.
 
