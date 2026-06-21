@@ -156,6 +156,18 @@ Cake         x1    $6.00
 Subtotal: $27.50
 Tax (8%): $2.20
 Total: $29.70""",
+
+    """NovaMark Agency — Digital Marketing Services
+Invoice No: NM-2024-0338  |  Issue Date: 15 August 2024
+
+Social Media Management (3 platforms)    1 month    £1,200.00
+Paid Ads Management Fee                  1 month    £800.00
+Creative Production (8 assets)           8 units    £150.00/unit = £1,200.00
+Performance Report & Strategy Call       1 session  £350.00
+
+Subtotal: £3,550.00
+VAT (20%): £710.00
+Total Due: £4,260.00""",
 ]
 
 def extract_invoice(text: str, model: str):
@@ -560,7 +572,15 @@ with gr.Blocks(title="Agent Use Cases") as demo:
     )
 
     with gr.Tab("📄 Invoice Extractor"):
-        gr.Markdown("Paste any invoice or receipt text → extract vendor, line items, and totals instantly.")
+        gr.Markdown(
+            "Paste any invoice or receipt → vendor, date, line items, and totals extracted in under 3 seconds.\n\n"
+            "**Built for:** finance teams replacing manual data entry from PDFs, emails, and receipts."
+        )
+        with gr.Accordion("What gets extracted", open=True):
+            gr.Markdown(
+                "Vendor · Invoice number · Date (ISO) · Line items (description, qty, unit price, total) · Subtotal / Tax / Total\n\n"
+                "_The model returns exact values from the document — never interpolates missing fields._"
+            )
         inv_text = gr.Textbox(label="Invoice text", lines=10, placeholder="Paste invoice or receipt here…")
         with gr.Row():
             inv_model = gr.Dropdown(choices=MODELS, value=MODELS[0], label="Model")

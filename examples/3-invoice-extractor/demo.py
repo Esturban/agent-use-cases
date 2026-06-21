@@ -14,6 +14,9 @@ SYSTEM_PROMPT = (
 )
 
 MODELS = [
+    "openai/gpt-5.4-nano",
+    "minimax/minimax-m3",
+    "openai/gpt-4.1-nano",
     "openai/gpt-4o-mini",
     "anthropic/claude-haiku-4-5",
     "google/gemini-flash-1.5",
@@ -56,6 +59,20 @@ Subtotal: $27.50
 Tax (8%): $2.20
 Total: $29.70"""
 
+SAMPLE_AGENCY = """NovaMark Agency — Digital Marketing Services
+Invoice No: NM-2024-0338
+Issue Date: 15 August 2024
+
+Social Media Management (3 platforms)    1 month    £1,200.00
+Paid Ads Management Fee                  1 month    £800.00
+Creative Production (8 assets)           8 units    £150.00/unit = £1,200.00
+Performance Report & Strategy Call       1 session  £350.00
+
+Subtotal: £3,550.00
+VAT (20%): £710.00
+Total Due: £4,260.00
+Payment Terms: 30 days"""
+
 
 def extract_invoice(invoice_text: str, model: str):
     if not invoice_text.strip():
@@ -94,13 +111,33 @@ def extract_invoice(invoice_text: str, model: str):
 
 
 with gr.Blocks(title="Invoice Extractor") as demo:
-    gr.Markdown("## Invoice Extractor\nPaste raw invoice or receipt text to extract structured fields.")
+    gr.Markdown(
+        "## 📄 Invoice Extractor\n"
+        "Paste any invoice or receipt — the model pulls out vendor, date, every line item, "
+        "and totals into structured fields in under 3 seconds.\n\n"
+        "**Built for:** finance teams and accounts payable — replacing manual data entry "
+        "from PDFs, emails, and scanned receipts into any ERP or spreadsheet."
+    )
+
+    with gr.Accordion("What gets extracted", open=True):
+        gr.Markdown(
+            "| Field | Detail |\n"
+            "|-------|--------|\n"
+            "| **Vendor** | Supplier / business name |\n"
+            "| **Invoice number** | Reference ID exactly as written |\n"
+            "| **Date** | Normalized to ISO format (YYYY-MM-DD) |\n"
+            "| **Line items** | Description · quantity · unit price · line total |\n"
+            "| **Subtotal / Tax / Total** | Amounts as plain decimals, no currency symbols |\n\n"
+            "**Samples included:** SaaS subscription, consulting day-rate, cafe receipt, "
+            "and a UK agency invoice (tests currency symbol handling and VAT).\n\n"
+            "_The model returns exact values from the document — it never interpolates or infers missing fields._"
+        )
 
     with gr.Row():
         invoice_input = gr.Textbox(
-            label="Invoice Text",
-            lines=12,
-            placeholder="Paste your invoice or receipt text here...",
+            label="Invoice text",
+            lines=14,
+            placeholder="Paste your invoice or receipt text here…",
         )
 
     with gr.Row():
@@ -112,28 +149,28 @@ with gr.Blocks(title="Invoice Extractor") as demo:
         extract_btn = gr.Button("Extract Invoice", variant="primary")
 
     gr.Examples(
-        examples=[[SAMPLE_SAAS], [SAMPLE_CONSULTING], [SAMPLE_CAFE]],
+        examples=[[SAMPLE_SAAS], [SAMPLE_CONSULTING], [SAMPLE_CAFE], [SAMPLE_AGENCY]],
         inputs=[invoice_input],
-        label="Sample Invoices",
+        label="Sample invoices — click to load",
     )
 
-    gr.Markdown("### Extracted Fields")
+    gr.Markdown("#### Extracted fields")
 
     with gr.Row():
-        vendor_out = gr.Textbox(label="Vendor")
-        invoice_number_out = gr.Textbox(label="Invoice Number")
-        date_out = gr.Textbox(label="Date")
+        vendor_out = gr.Textbox(label="Vendor", interactive=False)
+        invoice_number_out = gr.Textbox(label="Invoice number", interactive=False)
+        date_out = gr.Textbox(label="Date (ISO)", interactive=False)
 
     line_items_out = gr.Dataframe(
         headers=["Description", "Qty", "Unit Price", "Total"],
-        label="Line Items",
+        label="Line items",
         interactive=False,
     )
 
     with gr.Row():
         subtotal_out = gr.Number(label="Subtotal")
         tax_out = gr.Number(label="Tax")
-        total_out = gr.Number(label="Total Amount")
+        total_out = gr.Number(label="Total amount")
 
     extract_btn.click(
         fn=extract_invoice,
