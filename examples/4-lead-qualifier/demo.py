@@ -24,6 +24,8 @@ reasoning must explain the score in 1-2 sentences citing the criteria.
 Never invent data not present in the lead description."""
 
 MODELS = [
+    "openai/gpt-5.4-nano",
+    "minimax/minimax-m3",
     "openai/gpt-4.1-nano",
     "openai/gpt-4o-mini",
     "anthropic/claude-haiku-4-5",
