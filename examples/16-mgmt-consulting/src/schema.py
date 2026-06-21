@@ -16,7 +16,7 @@ class Recommendation(BaseModel):
     )
     estimated_annual_saving: Optional[str] = Field(
         default=None,
-        description="Estimated annual saving in GBP where quantifiable, e.g. 'GBP 180k'",
+        description="Estimated annual saving in SAR where quantifiable, e.g. 'SAR 180k' or 'SAR 1.2m'. Always SAR.",
     )
     rationale: str = Field(description="Why this is an inefficiency and what fixing it achieves")
     implementation_steps: List[str] = Field(
@@ -30,7 +30,7 @@ class CostOptimizationReport(BaseModel):
     company: Optional[str] = None
     total_addressable_saving: Optional[str] = Field(
         default=None,
-        description="Sum of all quantified annual savings across all recommendations",
+        description="Sum of all quantified annual savings across all recommendations, in SAR, e.g. 'SAR 4.2m'",
     )
     executive_summary: str = Field(
         description="3-4 sentences for a C-suite audience: what was found and the priority action"
