@@ -529,6 +529,7 @@ REACT_SAMPLES = [
     ["Add 15 and 27, then multiply the result by 3."],
     ["A team of 7 earns 450 per person per month. 3 of them receive a 120 bonus. What is the total monthly payroll?"],
     ["What is (12 + 8) × (6 + 4)?"],
+    ["A warehouse has 3 sections. Section A holds 48 pallets, section B holds 36, section C holds 57. If each pallet weighs 25 kg, what is the total weight in kg?"],
 ]
 
 def run_agent(question: str, model: str):
@@ -750,8 +751,16 @@ with gr.Blocks(title="Agent Use Cases") as demo:
     with gr.Tab("🤖 ReAct Agent"):
         gr.Markdown(
             "Ask a multi-step math question → watch the agent chain **add** and **multiply** tool calls to solve it.\n\n"
-            "*The agent has no calculator — it can only call tools. This shows what 'agentic' actually means.*"
+            "**Built for:** understanding how AI agents work — this loop is the foundation of every agent you'll ever build."
         )
+        with gr.Accordion("How a ReAct agent works", open=True):
+            gr.Markdown(
+                "**ReAct = Reason + Act.** The agent loops: decide which tool → call it → get result → repeat.\n\n"
+                "This agent has only `add(x, y)` and `multiply(x, y)`. It cannot compute anything itself — "
+                "every step must go through a tool call, making every decision visible in the trace.\n\n"
+                "**Why this matters:** swap the math tools for `search_web`, `query_database`, or `send_email` "
+                "and you have a real-world agent. The loop is identical."
+            )
         with gr.Row():
             with gr.Column(scale=2):
                 react_q = gr.Textbox(label="Math question", lines=3, placeholder="e.g. What is (3 + 4) multiplied by 5?")
