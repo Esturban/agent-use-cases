@@ -1,8 +1,9 @@
 """
-Hugging Face Spaces entry point — three agent demos in one tabbed interface.
+Hugging Face Spaces entry point — six agent demos in one tabbed interface.
 Set OPENROUTER_API_KEY as a Space secret before launching.
 """
 
+import json
 import os
 from typing import List, Literal, Optional
 
@@ -73,6 +74,28 @@ class ContractReview(BaseModel):
     risk_findings: List[RiskFinding]
     missing_protections: List[MissingProtection]
     negotiation_points: List[NegotiationPoint]
+
+class TicketClassification(BaseModel):
+    ticket_type: Literal["billing", "technical", "account", "feature_request", "other"]
+    urgency: Literal["critical", "high", "medium", "low"]
+    team: Literal["billing", "engineering", "account_management", "product", "general_support"]
+    confidence: float
+    reasoning: str
+
+class DraftReply(BaseModel):
+    subject: str
+    body: str
+    internal_note: str
+    escalate: bool
+
+class LeadScore(BaseModel):
+    company: str
+    score: int = Field(ge=1, le=10)
+    tier: Literal["hot", "warm", "cold"]
+    criteria_met: List[str]
+    criteria_missed: List[str]
+    recommended_action: str
+    reasoning: str
 
 # ── Shared ───────────────────────────────────────────────────────────────────
 
@@ -313,12 +336,183 @@ def review_contract(text: str, model: str):
 
     return RISK_LABEL.get(result.overall_risk, result.overall_risk), result.executive_summary, risk_md, protection_md, neg_md
 
+# ── Tab 4: Support Ticket Router ─────────────────────────────────────────────
+
+TICKET_CLASSIFIER_SYSTEM = (
+    "You are a customer support ticket classifier. Given a support ticket, classify:\n"
+    "- ticket_type: billing | technical | account | feature_request | other\n"
+    "- urgency: critical (service down/data loss/security) | high (major feature broken/billing dispute)"
+    " | medium (degraded perf/billing question) | low (general question/feature request)\n"
+    "- team: billing | engineering | account_management | product | general_support\n"
+    "- confidence: 0.0-1.0\n"
+    "- reasoning: one sentence explaining the routing decision"
+)
+
+DRAFTER_SYSTEMS = {
+    "billing": "Draft a first-response email for the billing support team. Empathetic, acknowledge issue, set 1-2 business day resolution expectation. Set escalate=True for disputes over $500 or subscription cancellations.",
+    "engineering": "Draft a first-response email for the engineering/technical support team. Acknowledge issue, ask for relevant details if not provided. Set escalate=True for outages, data loss, or security.",
+    "account_management": "Draft a first-response email for the account management team. Warm and professional. For cancellations, offer retention path. Set escalate=True for enterprise accounts.",
+    "product": "Draft a first-response email for the product team. Thank customer, confirm feedback logged, no timeline commitments. escalate=False unless blocking.",
+    "general_support": "Draft a first-response email for general support. Helpful and concise, aim to resolve in one reply. escalate=True only if account access or billing changes needed.",
+}
+
+URGENCY_EMOJI = {"critical": "🔴 critical", "high": "🟠 high", "medium": "🟡 medium", "low": "🟢 low"}
+
+TICKET_SAMPLES = [
+    ["Charged twice this month - invoice #4821", "Sarah Chen", "schen@example.com",
+     "I noticed my credit card was charged $99 twice on June 1st. Invoice #4821 shows a duplicate charge. Please refund ASAP."],
+    ["Dashboard not loading - production down", "Marcus Torres", "m.torres@bigcorp.com",
+     "Our entire team cannot access the dashboard since 9 AM EST. Getting 502 errors. Enterprise plan."],
+    ["How do I add team members?", "Priya Patel", "priya@startup.io",
+     "I'm trying to invite my colleagues to our workspace but can't find where to do it."],
+]
+
+def route_and_draft(subject: str, name: str, email: str, body: str, model: str):
+    if not body.strip():
+        return "", "", "", "", "", "", "", ""
+    try:
+        client = _client()
+        clf: TicketClassification = client.beta.chat.completions.parse(
+            model=model,
+            messages=[
+                {"role": "system", "content": TICKET_CLASSIFIER_SYSTEM},
+                {"role": "user", "content": f"Subject: {subject}\nFrom: {name} <{email}>\n---\n{body}"},
+            ],
+            response_format=TicketClassification,
+        ).choices[0].message.parsed
+        draft_msg = (
+            f"You are replying to this support ticket:\nSubject: {subject}\nFrom: {name} <{email}>\n"
+            f"---\n{body}\n---\nClassification: {clf.ticket_type} / {clf.urgency} urgency → routed to {clf.team}"
+        )
+        draft: DraftReply = client.beta.chat.completions.parse(
+            model=model,
+            messages=[
+                {"role": "system", "content": DRAFTER_SYSTEMS.get(clf.team, DRAFTER_SYSTEMS["general_support"])},
+                {"role": "user", "content": draft_msg},
+            ],
+            response_format=DraftReply,
+        ).choices[0].message.parsed
+    except Exception as e:
+        return str(e), "", "", "", "", "", "", ""
+    return (
+        URGENCY_EMOJI.get(clf.urgency, clf.urgency),
+        clf.team.replace("_", " "),
+        f"{clf.confidence * 100:.0f}%",
+        clf.reasoning,
+        draft.subject,
+        draft.body,
+        draft.internal_note,
+        "⚠️ Yes" if draft.escalate else "No",
+    )
+
+# ── Tab 5: Lead Qualifier ─────────────────────────────────────────────────────
+
+LEAD_SYSTEM = """You are a sales qualification assistant. Score inbound leads against this ICP rubric.
+
+IDEAL CUSTOMER PROFILE (ICP):
+  Industry:      SaaS, FinTech, or E-commerce
+  Company size:  50-500 employees
+  Pain point:    manual workflows, data silos, or compliance burden
+  Buyer role:    VP Operations, CFO, or CTO
+  Budget signal: existing software spend > $5k/month
+
+SCORING:
+  8-10 -> hot   (3+ criteria met, strong pain + budget signal)
+  5-7  -> warm  (2 criteria met, or strong pain but budget unclear)
+  1-4  -> cold  (fewer than 2 criteria met)
+
+Populate criteria_met and criteria_missed by naming the exact ICP criteria above.
+reasoning must explain the score in 1-2 sentences. Never invent data not present in the lead."""
+
+LEAD_SAMPLES = [
+    "Company: Meridian Payments | Industry: FinTech | Size: 120 employees | Contact: Sarah Chen, VP of Operations | Notes: Team reconciling invoices manually across 3 spreadsheets, ~15 hours/week. Pay ~$8k/month in SaaS tools, looking to consolidate before Q3. Budget $2k–4k/month.",
+    "Company: BloomRetail | Industry: E-commerce | Size: 35 employees | Contact: James Park, Head of Marketing | Notes: Struggling with inventory data across Shopify and their WMS. No dedicated ops person. Budget unclear but interested in a demo.",
+    "Company: Riverside Law Group | Industry: Legal | Size: 12 attorneys | Contact: Office Manager | Notes: Looking for a better way to track billable hours. Currently using spreadsheets. Very small team, no budget discussed.",
+]
+
+TIER_EMOJI = {"hot": "🔥 hot", "warm": "🟡 warm", "cold": "❄️ cold"}
+
+def qualify(lead_text: str, model: str):
+    if not lead_text.strip():
+        return None, "", "", "", "", ""
+    try:
+        result: LeadScore = _client().beta.chat.completions.parse(
+            model=model,
+            messages=[
+                {"role": "system", "content": LEAD_SYSTEM},
+                {"role": "user", "content": lead_text},
+            ],
+            response_format=LeadScore,
+        ).choices[0].message.parsed
+    except Exception as e:
+        return None, str(e), "", "", "", ""
+    return (
+        result.score,
+        TIER_EMOJI.get(result.tier, result.tier),
+        "\n".join(result.criteria_met),
+        "\n".join(result.criteria_missed),
+        result.recommended_action,
+        result.reasoning,
+    )
+
+# ── Tab 6: Basic ReAct Agent ──────────────────────────────────────────────────
+
+def _add(x: int, y: int) -> int:
+    return x + y
+
+def _multiply(x: int, y: int) -> int:
+    return x * y
+
+REACT_TOOLS = [
+    {"type": "function", "function": {"name": "add", "description": "Add two integers", "parameters": {"type": "object", "properties": {"x": {"type": "integer"}, "y": {"type": "integer"}}, "required": ["x", "y"]}}},
+    {"type": "function", "function": {"name": "multiply", "description": "Multiply two integers", "parameters": {"type": "object", "properties": {"x": {"type": "integer"}, "y": {"type": "integer"}}, "required": ["x", "y"]}}},
+]
+REACT_FNS = {"add": _add, "multiply": _multiply}
+
+REACT_SAMPLES = [
+    ["What is (3 + 4) multiplied by 5?"],
+    ["Add 15 and 27, then multiply the result by 3."],
+    ["A team of 7 earns 450 per person per month. 3 of them receive a 120 bonus. What is the total monthly payroll?"],
+    ["What is (12 + 8) × (6 + 4)?"],
+]
+
+def run_agent(question: str, model: str):
+    if not question.strip():
+        return "", ""
+    try:
+        client = _client()
+    except ValueError as e:
+        return str(e), ""
+    messages = [
+        {"role": "system", "content": "You are a math assistant. Solve problems using only the provided tools. Do not compute answers yourself."},
+        {"role": "user", "content": question},
+    ]
+    trace_lines = []
+    for step in range(10):
+        response = client.chat.completions.create(model=model, messages=messages, tools=REACT_TOOLS, tool_choice="auto")
+        msg = response.choices[0].message
+        messages.append({
+            "role": "assistant",
+            "content": msg.content,
+            "tool_calls": [{"id": tc.id, "type": "function", "function": {"name": tc.function.name, "arguments": tc.function.arguments}} for tc in (msg.tool_calls or [])],
+        })
+        if msg.tool_calls:
+            for tc in msg.tool_calls:
+                fn_args = json.loads(tc.function.arguments)
+                result = REACT_FNS[tc.function.name](**fn_args)
+                args_str = ", ".join(f"{k}={v}" for k, v in fn_args.items())
+                trace_lines.append(f"**Step {step + 1}:** `{tc.function.name}({args_str})` → `{result}`")
+                messages.append({"role": "tool", "tool_call_id": tc.id, "content": str(result)})
+        else:
+            return "\n\n".join(trace_lines) or "_No tools called_", msg.content or ""
+    return "\n\n".join(trace_lines), "Max iterations reached."
+
 # ── App ──────────────────────────────────────────────────────────────────────
 
 with gr.Blocks(title="Agent Use Cases") as demo:
     gr.Markdown(
         "# Agent Use Cases\n"
-        "Three real-world AI agent demos — structured output via OpenRouter.\n"
+        "Six real-world AI agent demos — structured output via OpenRouter.\n"
         "Pick a model, paste your text, hit the button."
     )
 
@@ -385,6 +579,65 @@ with gr.Blocks(title="Agent Use Cases") as demo:
             [con_text, con_model],
             [con_risk, con_summary, con_findings, con_missing, con_neg],
         )
+
+    with gr.Tab("🎫 Support Ticket Router"):
+        gr.Markdown("Paste a customer ticket → routed to the right team with a ready-to-send draft reply.")
+        with gr.Row():
+            with gr.Column():
+                tkt_subject = gr.Textbox(label="Subject")
+                tkt_name = gr.Textbox(label="Customer name")
+                tkt_email = gr.Textbox(label="Customer email")
+                tkt_body = gr.Textbox(label="Ticket body", lines=6)
+                tkt_model = gr.Dropdown(choices=MODELS, value=MODELS[0], label="Model")
+                tkt_btn = gr.Button("Route & Draft", variant="primary")
+                gr.Examples(examples=TICKET_SAMPLES, inputs=[tkt_subject, tkt_name, tkt_email, tkt_body], label="Sample tickets")
+            with gr.Column():
+                gr.Markdown("#### Classification")
+                tkt_urgency = gr.Textbox(label="Urgency", interactive=False)
+                tkt_team = gr.Textbox(label="Team", interactive=False)
+                tkt_conf = gr.Textbox(label="Confidence", interactive=False)
+                tkt_reason = gr.Textbox(label="Reasoning", interactive=False)
+                gr.Markdown("#### Draft reply")
+                tkt_ds = gr.Textbox(label="Subject", interactive=False)
+                tkt_db = gr.Textbox(label="Body", lines=7, interactive=False)
+                tkt_note = gr.Textbox(label="Internal note", interactive=False)
+                tkt_esc = gr.Textbox(label="Escalate", interactive=False)
+        tkt_btn.click(route_and_draft, [tkt_subject, tkt_name, tkt_email, tkt_body, tkt_model],
+                      [tkt_urgency, tkt_team, tkt_conf, tkt_reason, tkt_ds, tkt_db, tkt_note, tkt_esc])
+
+    with gr.Tab("🎯 Lead Qualifier"):
+        gr.Markdown("Paste a lead description → ICP fit score, tier, and recommended next action.")
+        with gr.Row():
+            with gr.Column():
+                lead_text = gr.Textbox(label="Lead description", lines=10, placeholder="Paste lead notes here…")
+                lead_model = gr.Dropdown(choices=MODELS, value=MODELS[0], label="Model")
+                lead_btn = gr.Button("Qualify Lead", variant="primary")
+                gr.Examples(examples=[[s] for s in LEAD_SAMPLES], inputs=lead_text, label="Sample leads")
+            with gr.Column():
+                lead_score = gr.Number(label="ICP Score (1–10)")
+                lead_tier = gr.Textbox(label="Tier")
+                lead_met = gr.Textbox(label="Criteria met")
+                lead_missed = gr.Textbox(label="Criteria missed")
+                lead_action = gr.Textbox(label="Recommended action")
+                lead_reason = gr.Textbox(label="Reasoning", lines=3)
+        lead_btn.click(qualify, [lead_text, lead_model],
+                       [lead_score, lead_tier, lead_met, lead_missed, lead_action, lead_reason])
+
+    with gr.Tab("🤖 ReAct Agent"):
+        gr.Markdown(
+            "Ask a multi-step math question → watch the agent chain **add** and **multiply** tool calls to solve it.\n\n"
+            "*The agent has no calculator — it can only call tools. This shows what 'agentic' actually means.*"
+        )
+        with gr.Row():
+            with gr.Column(scale=2):
+                react_q = gr.Textbox(label="Math question", lines=3, placeholder="e.g. What is (3 + 4) multiplied by 5?")
+                react_model = gr.Dropdown(choices=MODELS, value=MODELS[0], label="Model")
+                react_btn = gr.Button("Ask Agent", variant="primary")
+                gr.Examples(examples=REACT_SAMPLES, inputs=react_q, label="Sample questions")
+            with gr.Column(scale=3):
+                react_trace = gr.Markdown(label="Tool call trace")
+                react_ans = gr.Textbox(label="Final answer", lines=3)
+        react_btn.click(run_agent, [react_q, react_model], [react_trace, react_ans])
 
 if __name__ == "__main__":
     demo.launch()
