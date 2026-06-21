@@ -19,7 +19,7 @@ from .schema import (
 )
 
 _client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
-_MODEL = "gpt-4o-mini"
+_MODEL = "gpt-4.1-nano"
 
 
 def _extract_obligations(

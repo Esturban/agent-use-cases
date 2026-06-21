@@ -13,7 +13,7 @@ def run(operational_profile: str) -> CostOptimizationReport:
     Returns:
         CostOptimizationReport with quick_wins, major_projects, fill_ins, thankless_tasks
     """
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
     consultant = CONSULTANT_SYSTEM | llm.with_structured_output(CostOptimizationReport)
     return consultant.invoke(
         HumanMessage(content="Operational profile:\n\n" + operational_profile)

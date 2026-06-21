@@ -23,7 +23,7 @@ from .prompts import HEAL_SYSTEM, POSTMORTEM_SYSTEM
 from .schema import CIFailure, HealingResult, RepairAttempt, RepairPostmortem
 from .tools import TOOL_DEFINITIONS, TOOL_MAP, reset_state
 
-_MODEL = "gpt-4o-mini"
+_MODEL = "gpt-4.1-nano"
 
 
 def _get_client() -> OpenAI:

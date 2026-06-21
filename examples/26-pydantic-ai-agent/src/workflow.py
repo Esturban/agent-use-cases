@@ -18,7 +18,7 @@ from pydantic_ai.models.openai import OpenAIModel
 from .schema import Invoice
 
 
-def create_agent(model_name: str = "gpt-4o-mini") -> Agent:
+def create_agent(model_name: str = "gpt-4.1-nano") -> Agent:
     """Build a PydanticAI Agent whose return type is Invoice."""
     model = OpenAIModel(model_name, api_key=os.environ["OPENAI_API_KEY"])
     return Agent(
@@ -32,7 +32,7 @@ def create_agent(model_name: str = "gpt-4o-mini") -> Agent:
     )
 
 
-def extract(invoice_text: str, model_name: str = "gpt-4o-mini") -> Invoice:
+def extract(invoice_text: str, model_name: str = "gpt-4.1-nano") -> Invoice:
     """
     Extract structured invoice data from raw invoice text.
 

@@ -79,7 +79,7 @@ def scan(packages: list[tuple[str, str]], ecosystem: str = "PyPI") -> Vulnerabil
     )
 
     completion = client.beta.chat.completions.parse(
-        model="gpt-4o-mini",
+        model="gpt-4.1-nano",
         messages=[
             {"role": "system", "content": _SYNTHESIS_SYSTEM},
             {"role": "user", "content": user_content},

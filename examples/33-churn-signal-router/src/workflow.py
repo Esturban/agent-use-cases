@@ -8,7 +8,7 @@ from .prompts import ROUTER_SYSTEM
 from .schema import ChurnBatch, NpsResponse, RoutedResponse
 
 _client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-_MODEL = "gpt-4o-mini"
+_MODEL = "gpt-4.1-nano"
 
 
 def _route_one(response: NpsResponse) -> RoutedResponse:

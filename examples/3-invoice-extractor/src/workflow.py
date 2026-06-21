@@ -10,5 +10,5 @@ def create_workflow():
     If the response fails Pydantic validation (e.g. total_amount <= 0),
     the LangChain layer retries automatically.
     """
-    llm = ChatOpenAI(model="gpt-4o-mini")
+    llm = ChatOpenAI(model="gpt-4.1-nano")
     return llm.with_structured_output(Invoice)

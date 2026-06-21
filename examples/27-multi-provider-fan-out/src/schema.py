@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 
 
 class StrategicOpinion(BaseModel):
-    model: str = Field(description="The model that produced this opinion (e.g. openai/gpt-4o-mini).")
+    model: str = Field(description="The model that produced this opinion (e.g. openai/gpt-4.1-nano).")
     recommendation: str = Field(
         description="The model's top strategic recommendation in one to two sentences."
     )

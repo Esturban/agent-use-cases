@@ -35,7 +35,7 @@ from .schema import (
 )
 
 _client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
-_MODEL = "gpt-4o-mini"
+_MODEL = "gpt-4.1-nano"
 
 # Map each stage to its specialist (system prompt, schema name, Pydantic model)
 _STAGE_AGENTS: dict[str, tuple[str, str, Any]] = {

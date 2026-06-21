@@ -250,7 +250,7 @@ def review_board_pack(pack_text: str, model: str):
         if r is None:
             raise gr.Error(
                 f"The model '{model}' did not return a structured response. "
-                "Try openai/gpt-4o-mini or openai/gpt-4.1-nano — both reliably support structured output."
+                "Try openai/gpt-5.4-nano or openai/gpt-4.1-nano — both reliably support structured output."
             )
     except gr.Error:
         raise

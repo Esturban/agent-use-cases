@@ -7,7 +7,7 @@ from .prompts import BEAR_SYSTEM, BULL_SYSTEM, RISK_SYSTEM, SYNTHESIS_SYSTEM
 from .schema import AnalystOpinion, BoardMemo
 
 _client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-_MODEL = "gpt-4o-mini"
+_MODEL = "gpt-4.1-nano"
 
 
 def _analyst(system: str, topic: str, reports: list[str]) -> AnalystOpinion:

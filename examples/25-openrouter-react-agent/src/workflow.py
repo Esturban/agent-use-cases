@@ -18,7 +18,7 @@ from .schema import AgentStep
 from .tools import DISPATCH, TOOLS
 
 
-def run(question: str, model: str = "openai/gpt-4o-mini") -> tuple[str, list[AgentStep]]:
+def run(question: str, model: str = "openai/gpt-4.1-nano") -> tuple[str, list[AgentStep]]:
     """
     Run a ReAct loop for a math question.
 

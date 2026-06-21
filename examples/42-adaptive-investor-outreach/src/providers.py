@@ -13,7 +13,7 @@ from .prompts import VALIDATE_SYSTEM
 from .schema import ClaimValidation
 
 VALIDATION_MODELS = [
-    "openai/gpt-4o-mini",
+    "openai/gpt-4.1-nano",
     "mistralai/mistral-7b-instruct",
     "meta-llama/llama-3.1-8b-instruct",
 ]
@@ -36,7 +36,7 @@ def validate_claim_with_model(
     Args:
         claim: The financial claim to assess (e.g. 'ARR grows from $2M to $8M').
         assumptions: The key modelling assumptions from the FinancialProjection.
-        model: OpenRouter model string (e.g. 'openai/gpt-4o-mini').
+        model: OpenRouter model string (e.g. 'openai/gpt-4.1-nano').
 
     Returns:
         A ClaimValidation with verdict, confidence, and note from that model.

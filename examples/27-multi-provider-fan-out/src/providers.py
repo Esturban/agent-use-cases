@@ -4,12 +4,12 @@ from .prompts import OPINION_SYSTEM, SYNTHESIS_SYSTEM
 from .schema import ModelConsensus, StrategicOpinion
 
 MODELS = [
-    "openai/gpt-4o-mini",
+    "openai/gpt-4.1-nano",
     "mistralai/mistral-7b-instruct",
     "meta-llama/llama-3.1-8b-instruct",
 ]
 
-SYNTHESIS_MODEL = "openai/gpt-4o-mini"
+SYNTHESIS_MODEL = "openai/gpt-4.1-nano"
 
 
 def query_model(client: OpenAI, model: str, topic: str) -> StrategicOpinion:

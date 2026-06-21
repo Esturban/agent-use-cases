@@ -57,7 +57,7 @@ def score(suppliers: list[tuple[str, str]]) -> SupplierRiskRegister:
     )
 
     completion = client.beta.chat.completions.parse(
-        model="gpt-4o-mini",
+        model="gpt-4.1-nano",
         messages=[
             {"role": "system", "content": _SCORING_SYSTEM},
             {"role": "user", "content": user_content},

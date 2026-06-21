@@ -5,12 +5,12 @@ from .schema import DraftReply, TicketClassification
 
 
 def create_classifier():
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
     return CLASSIFIER_PROMPT | llm.with_structured_output(TicketClassification)
 
 
 def create_drafter(team: str):
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
+    llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0.3)
     system = DRAFT_PROMPTS.get(team, DRAFT_PROMPTS["general_support"])
     return system | llm.with_structured_output(DraftReply)
 

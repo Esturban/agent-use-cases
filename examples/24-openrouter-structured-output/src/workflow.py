@@ -13,7 +13,7 @@ def create_client() -> OpenAI:
     )
 
 
-def classify(email_text: str, model: str = "openai/gpt-4o-mini") -> EmailTriage:
+def classify(email_text: str, model: str = "openai/gpt-4.1-nano") -> EmailTriage:
     """
     Classify an email using OpenRouter structured output.
 

@@ -12,7 +12,7 @@ def run(company_brief: str) -> FundraisingPackage:
     Returns:
         FundraisingPackage with persona-specific materials and universal value props
     """
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
 
     vc = draft_for_persona(llm, company_brief, "vc")
     pe = draft_for_persona(llm, company_brief, "pe")

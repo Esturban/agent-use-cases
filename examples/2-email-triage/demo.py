@@ -48,7 +48,6 @@ CATEGORY_EMOJI = {
 }
 
 MODELS = [
-    "openai/gpt-4o-mini",
     "anthropic/claude-haiku-4-5",
     "google/gemini-flash-1.5",
     "mistralai/mistral-7b-instruct",

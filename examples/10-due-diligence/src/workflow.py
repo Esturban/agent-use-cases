@@ -15,6 +15,6 @@ def run(documents: dict) -> DDReport:
         DDReport with a unified risk register (severity x likelihood matrix),
         overall assessment, conditions, and further investigation areas.
     """
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
     all_findings = [extract_document(llm, name, text) for name, text in documents.items()]
     return synthesise_findings(llm, all_findings)
