@@ -26,6 +26,9 @@ TIER_PREFIX = {
 }
 
 MODELS = [
+    "openai/gpt-5.4-nano",
+    "minimax/minimax-m3",
+    "openai/gpt-4.1-nano",
     "openai/gpt-4o-mini",
     "anthropic/claude-haiku-4-5",
     "google/gemini-flash-1.5",
@@ -52,6 +55,27 @@ Python, FastAPI, Django REST Framework, PostgreSQL, AWS, GCP, Docker, Kubernetes
 
 EDUCATION
 B.S. Computer Science, UC Berkeley"""
+
+SAMPLE_PRIYA = """Priya Sharma
+priya.sharma@email.com | github.com/priyasharma | linkedin.com/in/priyasharma
+
+EXPERIENCE
+Backend Engineer — NovaBanking (3 years)
+- Designed and shipped RESTful APIs in FastAPI for core banking microservices (10M+ requests/day)
+- Owns PostgreSQL schema design and query optimization for transaction ledger (TB-scale data)
+- Set up and maintains GCP Cloud Run deployment; writes GitHub Actions pipelines
+- Domain: payments, KYC, and fraud detection
+
+Software Engineer — InsureTech Co (2 years)
+- Python + Django REST Framework for policy administration APIs
+- Built Pydantic-based validation layer for third-party insurer data ingestion
+- Collaborated with DevOps on Kubernetes migration from on-prem
+
+SKILLS
+Python, FastAPI, Django REST Framework, PostgreSQL, GCP (Cloud Run, BigQuery), Docker, Kubernetes, Pydantic, GitHub Actions, Redis, Kafka
+
+EDUCATION
+B.Tech Computer Science, IIT Bombay"""
 
 SAMPLE_JORDAN = """Jordan Lee
 jordan.lee@email.com
@@ -122,14 +146,36 @@ def screen_resume(resume_text: str, model: str):
 
 
 with gr.Blocks(title="Resume Screener") as demo:
-    gr.Markdown("## Resume Screener — Senior Python Backend Engineer")
+    gr.Markdown(
+        "## 👤 Resume Screener\n"
+        "Paste a resume → the model scores it against a hardcoded job spec and returns a hire tier, "
+        "skills gap analysis, and a recommended action in under 5 seconds.\n\n"
+        "**Built for:** hiring managers, technical recruiters, and ops leads drowning in applications "
+        "who need a consistent, bias-resistant first pass before human review."
+    )
+
+    with gr.Accordion("Job Spec & Scoring Rubric", open=True):
+        gr.Markdown(
+            "**Role:** Senior Python Backend Engineer · Series B FinTech (80 employees)\n\n"
+            "| Requirement | Detail |\n"
+            "|-------------|--------|\n"
+            "| **Required** | Python 5+ yrs · FastAPI or Django REST · PostgreSQL · AWS or GCP · Git/CI/CD |\n"
+            "| **Nice to have** | FinTech domain · Pydantic · Docker/Kubernetes · Team leadership |\n"
+            "| **Red flags** | <3 yrs experience · No production deployments · Frontend or data-science only |\n\n"
+            "**Score → Tier:**\n"
+            "- `8–10` = ✅ strong_yes — schedule interview immediately\n"
+            "- `6–7` = 🟢 yes — strong candidate, proceed to technical screen\n"
+            "- `4–5` = 🟡 maybe — gaps present, worth a quick call to clarify\n"
+            "- `1–3` = 🔴 no — does not meet the bar for this role\n\n"
+            "_The model never inflates scores. Every gap in the resume vs. the spec is called out explicitly._"
+        )
 
     with gr.Row():
         with gr.Column():
             resume_input = gr.Textbox(
-                label="Resume Text",
+                label="Resume text",
                 placeholder="Paste the candidate's resume here…",
-                lines=12,
+                lines=14,
             )
             model_dropdown = gr.Dropdown(
                 choices=MODELS,
@@ -138,23 +184,20 @@ with gr.Blocks(title="Resume Screener") as demo:
             )
             screen_btn = gr.Button("Screen Resume", variant="primary")
             gr.Examples(
-                examples=[
-                    [SAMPLE_ALEX, MODELS[0]],
-                    [SAMPLE_JORDAN, MODELS[0]],
-                    [SAMPLE_SAM, MODELS[0]],
-                ],
-                inputs=[resume_input, model_dropdown],
-                label="Sample Resumes",
+                examples=[[SAMPLE_ALEX], [SAMPLE_PRIYA], [SAMPLE_JORDAN], [SAMPLE_SAM]],
+                inputs=[resume_input],
+                label="Sample resumes — click to load",
             )
 
         with gr.Column():
-            score_out = gr.Number(label="Overall Score (1–10)")
-            tier_out = gr.Textbox(label="Tier")
-            matched_out = gr.Textbox(label="Skills Matched")
-            missing_out = gr.Textbox(label="Skills Missing")
-            standout_out = gr.Textbox(label="Standout")
-            concern_out = gr.Textbox(label="Concern")
-            action_out = gr.Textbox(label="Recommended Action")
+            gr.Markdown("#### Screening result")
+            score_out = gr.Number(label="Score (1–10)")
+            tier_out = gr.Textbox(label="Hire tier", interactive=False)
+            matched_out = gr.Textbox(label="Skills matched", interactive=False)
+            missing_out = gr.Textbox(label="Skills missing", interactive=False)
+            standout_out = gr.Textbox(label="What stands out", lines=2, interactive=False)
+            concern_out = gr.Textbox(label="Main concern", lines=2, interactive=False)
+            action_out = gr.Textbox(label="Recommended action", interactive=False)
 
     screen_btn.click(
         fn=screen_resume,

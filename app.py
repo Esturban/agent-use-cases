@@ -196,6 +196,11 @@ RESUME_SAMPLES = [
 Led a team of 3. PostgreSQL, AWS (ECS, RDS), Docker, Kubernetes, GitHub Actions CI/CD.
 Skills: Python, FastAPI, PostgreSQL, AWS, Docker, Pydantic, Redis, Git.""",
 
+    """Priya Sharma — Backend Engineer
+5 years. FastAPI microservices for core banking (10M+ requests/day), PostgreSQL schema design,
+GCP Cloud Run + GitHub Actions CI/CD, Pydantic data validation, Docker + Kubernetes.
+Domain: payments, KYC, fraud detection. B.Tech IIT Bombay.""",
+
     """Jordan Lee — Data Scientist
 4 years. Python, pandas, scikit-learn, XGBoost. ML pipelines for e-commerce.
 Basic Flask for internal tools — never production. No cloud deployment.
@@ -543,7 +548,21 @@ with gr.Blocks(title="Agent Use Cases") as demo:
         )
 
     with gr.Tab("👤 Resume Screener"):
-        gr.Markdown("Paste a resume → scored against a Senior Python Backend Engineer spec in seconds.")
+        gr.Markdown(
+            "Paste a resume → scored against a hardcoded job spec in seconds — hire tier, "
+            "skills gap, and recommended action.\n\n"
+            "**Built for:** recruiters and hiring managers who need consistent, fast first-pass screening."
+        )
+        with gr.Accordion("Job Spec & Scoring Rubric", open=True):
+            gr.Markdown(
+                "**Role:** Senior Python Backend Engineer · Series B FinTech (80 employees)\n\n"
+                "| Requirement | Detail |\n"
+                "|-------------|--------|\n"
+                "| **Required** | Python 5+ yrs · FastAPI or Django REST · PostgreSQL · AWS or GCP · Git/CI/CD |\n"
+                "| **Nice to have** | FinTech domain · Pydantic · Docker/Kubernetes · Team leadership |\n"
+                "| **Red flags** | <3 yrs exp · No production deployments · Frontend or data-science only |\n\n"
+                "**Score → Tier:** `8–10` ✅ strong_yes · `6–7` 🟢 yes · `4–5` 🟡 maybe · `1–3` 🔴 no"
+            )
         with gr.Row():
             with gr.Column():
                 res_text = gr.Textbox(label="Resume text", lines=12, placeholder="Paste resume here…")
