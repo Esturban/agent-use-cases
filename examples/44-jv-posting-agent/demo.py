@@ -21,9 +21,44 @@ MODELS = [
 
 SYSTEM_CONTENT = POSTING_PROMPT.content
 
+CSS = """
+.badge {
+    display: inline-block;
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85em;
+    letter-spacing: 0.03em;
+}
+.badge-green  { background: #d1fae5; color: #065f46; }
+.badge-red    { background: #fee2e2; color: #991b1b; }
+.badge-orange { background: #fef3c7; color: #92400e; }
+.badge-gray   { background: #f3f4f6; color: #374151; }
+footer { display: none !important; }
+"""
+
+HEADER = """\
+# 44 · JV Posting Agent
+Convert any business event description into a **balanced, GL-coded double-entry journal posting**.
+
+> **Harness concept — double-entry validation gate:** The LLM assigns accounts from a 20-account chart of accounts.
+> A deterministic `check_balance()` gate then enforces **debit = credit** — LLM arithmetic is never trusted for financial correctness.
+> Any imbalanced posting is returned as `rejected` regardless of model confidence.
+"""
+
+
+def _badge(text: str) -> str:
+    text_lower = text.lower()
+    if text_lower in ("approved", "true"):
+        cls = "badge-green"
+    elif text_lower in ("rejected", "false"):
+        cls = "badge-red"
+    else:
+        cls = "badge-orange"
+    return f'<span class="badge {cls}">{text.upper()}</span>'
+
 
 def run_demo(event_description, document_type, amount, cost_centre, period, model):
-    """Call OpenRouter, validate balance, return structured result."""
     client = OpenAI(
         base_url="https://openrouter.ai/api/v1",
         api_key=os.environ["OPENAI_API_KEY"],
@@ -50,46 +85,65 @@ def run_demo(event_description, document_type, amount, cost_centre, period, mode
     total_dr = round(sum(debits), 2)
     total_cr = round(sum(credits), 2)
     status = "approved" if balanced else "rejected"
+
     lines_data = [
         [
-            line.side,
+            "DR" if line.side == "debit" else "CR",
             line.account_code,
             line.account_name,
-            line.amount,
+            f"{line.amount:,.2f}",
             line.cost_centre or "",
         ]
         for line in result.lines
     ]
-    return lines_data, str(balanced), status, total_dr, total_cr
-
-
-with gr.Blocks(title="JV Posting Agent") as demo:
-    gr.Markdown(
-        "# 44 · JV Posting Agent\n"
-        "Convert a business event into a balanced double-entry journal posting."
+    return (
+        lines_data,
+        _badge(str(balanced)),
+        _badge(status),
+        f"{total_dr:,.2f}",
+        f"{total_cr:,.2f}",
     )
+
+
+with gr.Blocks(title="JV Posting Agent", theme=gr.themes.Soft(), css=CSS) as demo:
+    gr.Markdown(HEADER)
+
     with gr.Row():
-        with gr.Column():
-            event_input = gr.Textbox(label="Event Description", lines=3)
-            doc_type = gr.Dropdown(
-                choices=["SA", "KR", "DR", "ZP", "AB", "AA", "RE"],
-                label="Document Type",
-                value="AA",
+        with gr.Column(scale=1):
+            gr.Markdown("### Input")
+            event_input = gr.Textbox(
+                label="Business Event",
+                lines=3,
+                placeholder="e.g. Received IT equipment invoice from Dell, capitalise as fixed asset",
             )
-            amount_input = gr.Number(label="Amount", value=10000.0)
-            cc_input = gr.Textbox(label="Cost Centre (optional)", value="")
-            period_input = gr.Textbox(label="Period (YYYY-MM)", value="2025-06")
+            with gr.Row():
+                doc_type = gr.Dropdown(
+                    choices=["SA", "KR", "DR", "ZP", "AB", "AA", "RE"],
+                    label="Document Type",
+                    value="AA",
+                    info="AA=Asset · AB=Depreciation · RE=Accrual · ZP=Payment · KR=Vendor inv · DR=Customer inv",
+                )
+                amount_input = gr.Number(label="Amount (USD)", value=12500.0, precision=2)
+            with gr.Row():
+                cc_input = gr.Textbox(label="Cost Centre", placeholder="CC5001 (optional)")
+                period_input = gr.Textbox(label="Period", value="2025-06", placeholder="YYYY-MM")
             model_input = gr.Dropdown(choices=MODELS, label="Model", value=MODELS[0])
-            submit_btn = gr.Button("Generate Posting", variant="primary")
-        with gr.Column():
+            submit_btn = gr.Button("Generate Journal Posting", variant="primary", size="lg")
+
+        with gr.Column(scale=1):
+            gr.Markdown("### Journal Lines")
             lines_out = gr.Dataframe(
-                headers=["Side", "Account Code", "Account Name", "Amount", "Cost Centre"],
-                label="Journal Lines",
+                headers=["Side", "Account", "Account Name", "Amount", "Cost Centre"],
+                label="Double-Entry Lines",
+                interactive=False,
+                wrap=True,
             )
-            balanced_out = gr.Textbox(label="Balanced")
-            status_out = gr.Textbox(label="Posting Status")
-            dr_out = gr.Number(label="Total Debits")
-            cr_out = gr.Number(label="Total Credits")
+            with gr.Row():
+                balanced_out = gr.HTML(label="Balanced")
+                status_out = gr.HTML(label="Status")
+            with gr.Row():
+                dr_out = gr.Textbox(label="Total Debits", interactive=False)
+                cr_out = gr.Textbox(label="Total Credits", interactive=False)
 
     submit_btn.click(
         fn=run_demo,
@@ -97,34 +151,15 @@ with gr.Blocks(title="JV Posting Agent") as demo:
         outputs=[lines_out, balanced_out, status_out, dr_out, cr_out],
     )
 
+    gr.Markdown("---\n### Try an example")
     gr.Examples(
         examples=[
-            [
-                "Received IT equipment invoice from Dell, capitalise as fixed asset",
-                "AA",
-                12500.0,
-                "CC5001",
-                "2025-06",
-                MODELS[0],
-            ],
-            [
-                "Accrue June salary expense for finance department, not yet paid",
-                "RE",
-                45000.0,
-                "CC2001",
-                "2025-06",
-                MODELS[0],
-            ],
-            [
-                "Customer payment received for outstanding invoice INV-2025-0441",
-                "ZP",
-                8750.0,
-                "",
-                "2025-06",
-                MODELS[0],
-            ],
+            ["Received IT equipment invoice from Dell, capitalise as fixed asset", "AA", 12500.0, "CC5001", "2025-06", MODELS[0]],
+            ["Accrue June salary expense for finance department, not yet paid", "RE", 45000.0, "CC2001", "2025-06", MODELS[0]],
+            ["Customer payment received for outstanding invoice INV-2025-0441", "ZP", 8750.0, "", "2025-06", MODELS[0]],
         ],
         inputs=[event_input, doc_type, amount_input, cc_input, period_input, model_input],
+        label="Pre-filled scenarios",
     )
 
 if __name__ == "__main__":

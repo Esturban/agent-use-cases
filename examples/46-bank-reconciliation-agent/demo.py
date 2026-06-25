@@ -1,4 +1,4 @@
-"""Gradio demo for the Bank Reconciliation Agent (via OpenRouter)."""
+"""Gradio demo — Bank Reconciliation Agent via OpenRouter."""
 
 import csv
 import io
@@ -8,6 +8,8 @@ import os
 import gradio as gr
 from dotenv import load_dotenv
 from openai import OpenAI
+from pydantic import BaseModel
+from typing import List
 
 from src.calculator import find_matches
 from src.prompts import RECON_SYSTEM
@@ -21,9 +23,39 @@ MODELS = [
     "anthropic/claude-haiku-4-5",
 ]
 
-# ---------------------------------------------------------------------------
-# Pre-filled example data (Scenario 1)
-# ---------------------------------------------------------------------------
+CSS = """
+.badge {
+    display: inline-block;
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85em;
+    letter-spacing: 0.03em;
+}
+.badge-green  { background: #d1fae5; color: #065f46; }
+.badge-red    { background: #fee2e2; color: #991b1b; }
+.badge-orange { background: #fef3c7; color: #92400e; }
+.badge-gray   { background: #f3f4f6; color: #374151; }
+footer { display: none !important; }
+"""
+
+HEADER = """\
+# 46 · Bank Reconciliation Agent
+Match bank statement transactions against GL cash account entries and classify exceptions.
+
+> **Harness concept — bounded matching loop:** A deterministic Python pre-matcher handles exact matches
+> (same amount + date) and probable matches (same amount, within 2 days). The LLM classifies **only the
+> unmatched exceptions** — so model call volume scales with exception count, not total transaction volume.
+> Framework: raw OpenAI SDK (no LangGraph).
+"""
+
+EXC_EMOJI = {
+    "timing_difference": "⏱ timing_difference",
+    "bank_charge": "🏦 bank_charge",
+    "duplicate": "♊ duplicate",
+    "missing_booking": "❓ missing_booking",
+    "fraud_indicator": "🚨 fraud_indicator",
+}
 
 EXAMPLE_BANK = """date,description,debit,credit
 2025-06-02,Customer payment Invoice 1041,0.00,5200.00
@@ -52,24 +84,18 @@ EXAMPLE_GL = """date,reference,amount,description
 2025-06-27,JE-2010,-7680.00,AP payment PO-8830
 2025-06-30,JE-2011,-482.00,Accrual reversal prepaid insurance"""
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
 
 def _parse_bank_csv(raw: str) -> list:
     reader = csv.DictReader(io.StringIO(raw.strip()))
     rows = []
     for i, row in enumerate(reader):
-        rows.append(
-            {
-                "txn_id": f"B{i + 1:02d}",
-                "date": row["date"].strip(),
-                "description": row["description"].strip(),
-                "debit": float(row.get("debit", 0) or 0),
-                "credit": float(row.get("credit", 0) or 0),
-            }
-        )
+        rows.append({
+            "txn_id": f"B{i + 1:02d}",
+            "date": row["date"].strip(),
+            "description": row["description"].strip(),
+            "debit": float(row.get("debit", 0) or 0),
+            "credit": float(row.get("credit", 0) or 0),
+        })
     return rows
 
 
@@ -77,22 +103,17 @@ def _parse_gl_csv(raw: str) -> list:
     reader = csv.DictReader(io.StringIO(raw.strip()))
     rows = []
     for i, row in enumerate(reader):
-        rows.append(
-            {
-                "entry_id": f"GL{i + 1:02d}",
-                "date": row["date"].strip(),
-                "reference": row.get("reference", f"JE-{i + 1}").strip(),
-                "amount": float(row["amount"]),
-                "description": row["description"].strip(),
-            }
-        )
+        rows.append({
+            "entry_id": f"GL{i + 1:02d}",
+            "date": row["date"].strip(),
+            "reference": row.get("reference", f"JE-{i + 1}").strip(),
+            "amount": float(row["amount"]),
+            "description": row["description"].strip(),
+        })
     return rows
 
 
 def _classify_unmatched(client, model, period, bank_balance, gl_balance, unmatched_bank, unmatched_gl):
-    from pydantic import BaseModel
-    from typing import List
-
     class _UnmatchedClassification(BaseModel):
         items: List[UnmatchedItem]
 
@@ -108,7 +129,7 @@ def _classify_unmatched(client, model, period, bank_balance, gl_balance, unmatch
         f"{json.dumps(payload, indent=2)}"
     )
     resp = client.beta.chat.completions.parse(
-        model=model.split("/", 1)[-1] if "/" in model else model,
+        model=model,
         messages=[
             {"role": "system", "content": RECON_SYSTEM},
             {"role": "user", "content": user_msg},
@@ -119,17 +140,12 @@ def _classify_unmatched(client, model, period, bank_balance, gl_balance, unmatch
     return parsed.items if parsed else []
 
 
-# ---------------------------------------------------------------------------
-# Handler
-# ---------------------------------------------------------------------------
-
-
 def reconcile(bank_csv, gl_csv, period, bank_balance, gl_balance, model):
     try:
         bank_txns = _parse_bank_csv(bank_csv)
         gl_entries = _parse_gl_csv(gl_csv)
     except Exception as exc:
-        return 0, [], "Error", f"CSV parse error: {exc}"
+        return 0, [], '<span class="badge badge-red">ERROR</span>', f"CSV parse error: {exc}"
 
     client = OpenAI(
         base_url="https://openrouter.ai/api/v1",
@@ -138,7 +154,6 @@ def reconcile(bank_csv, gl_csv, period, bank_balance, gl_balance, model):
 
     matched_raw, unmatched_bank, unmatched_gl = find_matches(bank_txns, gl_entries)
     matched_pairs = [MatchedPair(**m) for m in matched_raw]
-
     unmatched_items = _classify_unmatched(
         client, model, period, bank_balance, gl_balance, unmatched_bank, unmatched_gl
     )
@@ -172,72 +187,72 @@ def reconcile(bank_csv, gl_csv, period, bank_balance, gl_balance, model):
     unmatched_rows = [
         [
             item.item_id,
-            item.source,
+            "Bank" if item.source == "bank" else "GL",
             f"{item.amount:,.2f}",
-            item.exception_type,
+            EXC_EMOJI.get(item.exception_type, item.exception_type),
             item.recommended_action,
         ]
         for item in summary.unmatched_items
     ]
 
-    return (
-        len(summary.matched_pairs),
-        unmatched_rows,
-        "YES" if summary.is_reconciled else "NO",
-        summary.reconciliation_note,
+    recon_badge = (
+        '<span class="badge badge-green">✓ RECONCILED</span>'
+        if summary.is_reconciled
+        else '<span class="badge badge-red">✗ UNRECONCILED</span>'
     )
 
+    return len(summary.matched_pairs), unmatched_rows, recon_badge, summary.reconciliation_note
 
-# ---------------------------------------------------------------------------
-# UI
-# ---------------------------------------------------------------------------
 
-with gr.Blocks(title="Bank Reconciliation Agent") as demo:
-    gr.Markdown("# Bank Reconciliation Agent")
-    gr.Markdown(
-        "Paste bank statement and GL entries as CSV. "
-        "The agent pre-matches exact and probable pairs, then classifies exceptions with the LLM."
-    )
+with gr.Blocks(title="Bank Reconciliation Agent", theme=gr.themes.Soft(), css=CSS) as demo:
+    gr.Markdown(HEADER)
 
     with gr.Row():
-        with gr.Column():
+        with gr.Column(scale=3):
+            gr.Markdown("### Bank Statement")
             bank_csv = gr.Textbox(
-                label="Bank Statement (CSV: date,description,debit,credit)",
-                lines=14,
+                label="CSV (date, description, debit, credit)",
+                lines=13,
                 value=EXAMPLE_BANK,
             )
+            gr.Markdown("### GL Cash Account")
             gl_csv = gr.Textbox(
-                label="GL Cash Account (CSV: date,reference,amount,description)",
-                lines=12,
+                label="CSV (date, reference, amount, description)",
+                lines=11,
                 value=EXAMPLE_GL,
             )
-        with gr.Column():
+        with gr.Column(scale=1):
+            gr.Markdown("### Settings")
             period = gr.Textbox(label="Period", value="June 2025")
-            bank_balance = gr.Number(label="Bank Closing Balance", value=42350.00)
-            gl_balance = gr.Number(label="GL Cash Balance", value=41100.00)
+            bank_balance = gr.Number(label="Bank Closing Balance", value=42350.00, precision=2)
+            gl_balance = gr.Number(label="GL Cash Balance", value=41100.00, precision=2)
             model = gr.Dropdown(label="Model", choices=MODELS, value=MODELS[0])
-            run_btn = gr.Button("Reconcile", variant="primary")
+            run_btn = gr.Button("Reconcile", variant="primary", size="lg")
 
-    gr.Markdown("### Results")
+    gr.Markdown("---\n### Results")
     with gr.Row():
-        matched_count = gr.Number(label="Matched Pairs")
-        is_reconciled_out = gr.Textbox(label="Reconciled?")
+        matched_count = gr.Number(label="Matched Pairs", precision=0, interactive=False)
+        recon_badge_out = gr.HTML(label="Status")
+
     unmatched_df = gr.Dataframe(
-        headers=["ID", "Source", "Amount", "Exception", "Action"],
+        headers=["ID", "Source", "Amount", "Exception Type", "Recommended Action"],
         label="Unmatched / Exception Items",
+        interactive=False,
+        wrap=True,
     )
-    note_out = gr.Textbox(label="Reconciliation Note", lines=3)
+    note_out = gr.Textbox(label="Reconciliation Note", lines=2, interactive=False)
 
     run_btn.click(
         fn=reconcile,
         inputs=[bank_csv, gl_csv, period, bank_balance, gl_balance, model],
-        outputs=[matched_count, unmatched_df, is_reconciled_out, note_out],
+        outputs=[matched_count, unmatched_df, recon_badge_out, note_out],
     )
 
+    gr.Markdown("---\n### Try an example")
     gr.Examples(
         examples=[[EXAMPLE_BANK, EXAMPLE_GL, "June 2025", 42350.00, 41100.00, MODELS[0]]],
         inputs=[bank_csv, gl_csv, period, bank_balance, gl_balance, model],
-        label="Load Scenario 1 (standard close)",
+        label="Scenario 1 — standard month-end close",
     )
 
 if __name__ == "__main__":

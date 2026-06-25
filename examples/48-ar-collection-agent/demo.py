@@ -1,8 +1,4 @@
-"""Gradio demo for the AR Collection Agent (via OpenRouter).
-
-Accepts a JSON list of customer dicts, runs the aging-bucket state machine,
-and displays the resulting collection plan in a structured UI.
-"""
+"""Gradio demo — AR Collection Agent via OpenRouter."""
 
 import json
 import os
@@ -19,9 +15,31 @@ MODELS = [
     "anthropic/claude-haiku-4-5",
 ]
 
-# ---------------------------------------------------------------------------
-# Tier system prompts (inline for OpenRouter direct calls)
-# ---------------------------------------------------------------------------
+CSS = """
+.badge {
+    display: inline-block;
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85em;
+    letter-spacing: 0.03em;
+}
+.badge-green  { background: #d1fae5; color: #065f46; }
+.badge-red    { background: #fee2e2; color: #991b1b; }
+.badge-orange { background: #fef3c7; color: #92400e; }
+.badge-blue   { background: #dbeafe; color: #1e40af; }
+.badge-gray   { background: #f3f4f6; color: #374151; }
+footer { display: none !important; }
+"""
+
+HEADER = """\
+# 48 · AR Collection Agent
+Classify AR customers by aging bucket and generate **tone-calibrated collection letters** for each tier.
+
+> **Harness concept — aging-bucket state machine:** Bucket assignment is fully deterministic (`BUCKET_MAPPING` dict).
+> The LLM generates a different persona per tier using four distinct system prompts — same task, four radically different tones.
+> Credit hold logic is also deterministic (>90 days overdue or >80% of credit limit exposed).
+"""
 
 TIER_SYSTEM_PROMPTS: dict = {
     "friendly_reminder": (
@@ -66,9 +84,21 @@ BUCKET_MAPPING: dict = {
     "90_plus": "legal_referral",
 }
 
-# ---------------------------------------------------------------------------
-# Deterministic helpers
-# ---------------------------------------------------------------------------
+TIER_COLORS = {
+    "no_action": "badge-green",
+    "friendly_reminder": "badge-blue",
+    "formal_notice": "badge-orange",
+    "final_demand": "badge-red",
+    "legal_referral": "badge-red",
+}
+
+BUCKET_LABELS = {
+    "current": "Current",
+    "1_30": "1–30 days",
+    "31_60": "31–60 days",
+    "61_90": "61–90 days",
+    "90_plus": "90+ days",
+}
 
 
 def _get_bucket(days_overdue: int) -> str:
@@ -96,29 +126,25 @@ def _credit_hold(days_overdue: int, total_exposure: float, credit_limit: float):
     if ratio > 0.8:
         reasons.append(f"exposure {ratio * 100:.1f}% of credit limit")
     if reasons:
-        return True, "Credit hold: " + "; ".join(reasons) + "."
+        return True, "; ".join(reasons)
     return False, None
-
-
-# ---------------------------------------------------------------------------
-# Main handler
-# ---------------------------------------------------------------------------
 
 
 def generate_plan(customer_json: str, as_of_date: str, model: str):
     try:
         raw = json.loads(customer_json)
         if not isinstance(raw, list):
-            raise ValueError("Input must be a JSON array of customer objects.")
+            raise ValueError("Input must be a JSON array.")
     except (json.JSONDecodeError, ValueError) as exc:
-        return [], 0, 0, f"JSON parse error: {exc}"
+        return [], 0, 0, "", f"JSON error: {exc}"
 
     client = OpenAI(
         base_url="https://openrouter.ai/api/v1",
         api_key=os.environ["OPENAI_API_KEY"],
     )
 
-    actions = []
+    table_rows = []
+    letter_parts = []
 
     for cust in raw:
         try:
@@ -132,19 +158,17 @@ def generate_plan(customer_json: str, as_of_date: str, model: str):
             prior_contact_count = int(cust.get("prior_contact_count", 0))
             credit_limit = float(cust.get("credit_limit", 0))
             total_exposure = float(cust.get("total_exposure", outstanding_amount))
-        except (KeyError, TypeError, ValueError) as exc:
-            actions.append(
-                [customer_id if "customer_id" in cust else "?", "?", "parse_error", 0, "no", f"Error: {exc}"]
-            )
+        except (KeyError, TypeError, ValueError):
+            table_rows.append(["?", "?", "parse_error", "?", 0, "NO"])
             continue
 
         bucket = _get_bucket(days_overdue)
         tier = BUCKET_MAPPING[bucket]
         score = _priority_score(days_overdue, outstanding_amount)
-        hold, _ = _credit_hold(days_overdue, total_exposure, credit_limit)
+        hold, hold_reason = _credit_hold(days_overdue, total_exposure, credit_limit)
 
         if tier == "no_action":
-            letter_preview = "No action required."
+            letter = "No action required — account current."
         else:
             user_content = (
                 f"Customer: {customer_name} (ID: {customer_id})\n"
@@ -158,198 +182,117 @@ def generate_plan(customer_json: str, as_of_date: str, model: str):
             )
             try:
                 resp = client.chat.completions.create(
-                    model=model.split("/", 1)[-1] if "/" in model else model,
+                    model=model,
                     messages=[
                         {"role": "system", "content": TIER_SYSTEM_PROMPTS[tier]},
                         {"role": "user", "content": user_content},
                     ],
                     temperature=0.3,
                 )
-                letter_preview = resp.choices[0].message.content or "No response."
+                letter = resp.choices[0].message.content or "No response."
             except Exception as exc:
-                letter_preview = f"API error: {exc}"
+                letter = f"API error: {exc}"
 
-        actions.append(
-            [customer_name, bucket, tier, f"{currency} {outstanding_amount:,.2f}", score, "YES" if hold else "no", letter_preview[:300]]
-        )
+        table_rows.append([
+            customer_name,
+            BUCKET_LABELS.get(bucket, bucket),
+            tier.replace("_", " ").title(),
+            f"{currency} {outstanding_amount:,.2f}",
+            score,
+            "YES 🔒" if hold else "No",
+        ])
 
-    # Sort by priority score descending (column index 4)
-    actions.sort(key=lambda r: r[4], reverse=True)
+        header = f"{'═' * 60}\n{customer_name} | {BUCKET_LABELS.get(bucket, bucket)} | {tier.replace('_', ' ').title()}"
+        if hold and hold_reason:
+            header += f"\n⚠ Credit hold: {hold_reason}"
+        letter_parts.append(f"{header}\n{'─' * 60}\n{letter}\n")
 
-    credit_hold_count = sum(1 for r in actions if r[5] == "YES")
-    legal_referral_count = sum(1 for r in actions if r[2] == "legal_referral")
+    # Sort by priority score descending (col index 4)
+    table_rows.sort(key=lambda r: r[4], reverse=True)
+
+    credit_hold_count = sum(1 for r in table_rows if "YES" in str(r[5]))
+    legal_referral_count = sum(1 for r in table_rows if "Legal Referral" in str(r[2]))
 
     summary = (
-        f"Plan as of {as_of_date}. "
-        f"{len(actions)} accounts processed. "
-        f"Credit holds: {credit_hold_count}. "
-        f"Legal referrals: {legal_referral_count}."
+        f"Plan as of {as_of_date} · {len(table_rows)} accounts · "
+        f"{credit_hold_count} credit hold(s) · {legal_referral_count} legal referral(s)"
     )
 
-    # Return rows without the letter column for the dataframe, summary for textbox
-    df_rows = [[r[0], r[1], r[2], r[3], r[4], r[5]] for r in actions]
+    letters_text = "\n".join(letter_parts) if letter_parts else "No letters generated."
 
-    return df_rows, credit_hold_count, legal_referral_count, summary
+    return table_rows, credit_hold_count, legal_referral_count, letters_text, summary
 
 
-# ---------------------------------------------------------------------------
-# Example input — all 6 customers as pre-filled JSON
-# ---------------------------------------------------------------------------
+EXAMPLE_CUSTOMERS_JSON = json.dumps([
+    {"customer_id": "CUST-001", "customer_name": "Apex Corp", "invoice_number": "INV-2025-0441",
+     "invoice_date": "2025-06-10", "due_date": "2025-06-24", "outstanding_amount": 8750.00,
+     "currency": "USD", "days_overdue": 0, "prior_contact_count": 0, "credit_limit": 50000.00, "total_exposure": 8750.00},
+    {"customer_id": "CUST-002", "customer_name": "BrightPath Ltd", "invoice_number": "INV-2025-0388",
+     "invoice_date": "2025-05-17", "due_date": "2025-06-06", "outstanding_amount": 12400.00,
+     "currency": "USD", "days_overdue": 18, "prior_contact_count": 0, "credit_limit": 50000.00, "total_exposure": 12400.00},
+    {"customer_id": "CUST-003", "customer_name": "Coastal Trading", "invoice_number": "INV-2025-0312",
+     "invoice_date": "2025-04-20", "due_date": "2025-05-10", "outstanding_amount": 31500.00,
+     "currency": "USD", "days_overdue": 45, "prior_contact_count": 1, "credit_limit": 50000.00, "total_exposure": 31500.00},
+    {"customer_id": "CUST-004", "customer_name": "Delta Enterprises", "invoice_number": "INV-2025-0244",
+     "invoice_date": "2025-03-15", "due_date": "2025-04-14", "outstanding_amount": 22000.00,
+     "currency": "USD", "days_overdue": 72, "prior_contact_count": 2, "credit_limit": 50000.00, "total_exposure": 22000.00},
+    {"customer_id": "CUST-005", "customer_name": "Echo Systems", "invoice_number": "INV-2025-0180",
+     "invoice_date": "2025-02-10", "due_date": "2025-03-12", "outstanding_amount": 85000.00,
+     "currency": "USD", "days_overdue": 97, "prior_contact_count": 3, "credit_limit": 100000.00, "total_exposure": 120000.00},
+    {"customer_id": "CUST-006", "customer_name": "Frontier Corp", "invoice_number": "INV-2025-0201",
+     "invoice_date": "2025-04-25", "due_date": "2025-05-20", "outstanding_amount": 4200.00,
+     "currency": "USD", "days_overdue": 35, "prior_contact_count": 0, "credit_limit": 50000.00, "total_exposure": 4200.00},
+], indent=2)
 
-EXAMPLE_CUSTOMERS_JSON = json.dumps(
-    [
-        {
-            "customer_id": "CUST-001",
-            "customer_name": "Apex Corp",
-            "invoice_number": "INV-2025-0441",
-            "invoice_date": "2025-06-10",
-            "due_date": "2025-06-24",
-            "outstanding_amount": 8750.00,
-            "currency": "USD",
-            "days_overdue": 0,
-            "prior_contact_count": 0,
-            "credit_limit": 50000.00,
-            "total_exposure": 8750.00,
-        },
-        {
-            "customer_id": "CUST-002",
-            "customer_name": "BrightPath Ltd",
-            "invoice_number": "INV-2025-0388",
-            "invoice_date": "2025-05-17",
-            "due_date": "2025-06-06",
-            "outstanding_amount": 12400.00,
-            "currency": "USD",
-            "days_overdue": 18,
-            "prior_contact_count": 0,
-            "credit_limit": 50000.00,
-            "total_exposure": 12400.00,
-        },
-        {
-            "customer_id": "CUST-003",
-            "customer_name": "Coastal Trading",
-            "invoice_number": "INV-2025-0312",
-            "invoice_date": "2025-04-20",
-            "due_date": "2025-05-10",
-            "outstanding_amount": 31500.00,
-            "currency": "USD",
-            "days_overdue": 45,
-            "prior_contact_count": 1,
-            "credit_limit": 50000.00,
-            "total_exposure": 31500.00,
-        },
-        {
-            "customer_id": "CUST-004",
-            "customer_name": "Delta Enterprises",
-            "invoice_number": "INV-2025-0244",
-            "invoice_date": "2025-03-15",
-            "due_date": "2025-04-14",
-            "outstanding_amount": 22000.00,
-            "currency": "USD",
-            "days_overdue": 72,
-            "prior_contact_count": 2,
-            "credit_limit": 50000.00,
-            "total_exposure": 22000.00,
-        },
-        {
-            "customer_id": "CUST-005",
-            "customer_name": "Echo Systems",
-            "invoice_number": "INV-2025-0180",
-            "invoice_date": "2025-02-10",
-            "due_date": "2025-03-12",
-            "outstanding_amount": 85000.00,
-            "currency": "USD",
-            "days_overdue": 97,
-            "prior_contact_count": 3,
-            "credit_limit": 100000.00,
-            "total_exposure": 120000.00,
-        },
-        {
-            "customer_id": "CUST-006",
-            "customer_name": "Frontier Corp",
-            "invoice_number": "INV-2025-0201",
-            "invoice_date": "2025-04-25",
-            "due_date": "2025-05-20",
-            "outstanding_amount": 4200.00,
-            "currency": "USD",
-            "days_overdue": 35,
-            "prior_contact_count": 0,
-            "credit_limit": 50000.00,
-            "total_exposure": 4200.00,
-        },
-    ],
-    indent=2,
-)
-
-# ---------------------------------------------------------------------------
-# UI
-# ---------------------------------------------------------------------------
-
-with gr.Blocks(title="AR Collection Agent") as demo:
-    gr.Markdown(
-        "# AR Collection Agent\n"
-        "Paste a JSON array of customer records. The agent classifies each into an aging bucket "
-        "(deterministic), then generates a tone-calibrated collection letter via the selected model."
-    )
+with gr.Blocks(title="AR Collection Agent", theme=gr.themes.Soft(), css=CSS) as demo:
+    gr.Markdown(HEADER)
 
     with gr.Row():
         with gr.Column(scale=2):
+            gr.Markdown("### Customer Data")
             customer_input = gr.Textbox(
-                label="Customer Data (JSON array)",
-                lines=20,
-                placeholder=(
-                    "[\n"
-                    "  {\n"
-                    "    \"customer_id\": \"CUST-001\",\n"
-                    "    \"customer_name\": \"Example Co\",\n"
-                    "    \"invoice_number\": \"INV-2025-0001\",\n"
-                    "    \"invoice_date\": \"2025-05-01\",\n"
-                    "    \"due_date\": \"2025-05-31\",\n"
-                    "    \"outstanding_amount\": 15000.00,\n"
-                    "    \"currency\": \"USD\",\n"
-                    "    \"days_overdue\": 24,\n"
-                    "    \"prior_contact_count\": 0,\n"
-                    "    \"credit_limit\": 50000.00,\n"
-                    "    \"total_exposure\": 15000.00\n"
-                    "  }\n"
-                    "]"
-                ),
+                label="JSON array of customer records",
+                lines=22,
+                value=EXAMPLE_CUSTOMERS_JSON,
             )
         with gr.Column(scale=1):
-            as_of_date_input = gr.Textbox(
-                label="As of Date (YYYY-MM-DD)",
-                value="2025-06-24",
-            )
-            model_dropdown = gr.Dropdown(
-                choices=MODELS,
-                value=MODELS[0],
-                label="Model",
-            )
-            run_btn = gr.Button("Generate Collection Plan", variant="primary")
+            gr.Markdown("### Settings")
+            as_of_date_input = gr.Textbox(label="As of Date", value="2025-06-24")
+            model_dropdown = gr.Dropdown(choices=MODELS, value=MODELS[0], label="Model")
+            run_btn = gr.Button("Generate Collection Plan", variant="primary", size="lg")
 
-    gr.Markdown("## Collection Plan")
-
+    gr.Markdown("---\n### Collection Plan")
     actions_table = gr.Dataframe(
-        headers=["Customer", "Bucket", "Tier", "Amount", "Priority", "Credit Hold"],
-        label="Actions (sorted by priority)",
+        headers=["Customer", "Aging Bucket", "Tier", "Amount", "Priority", "Credit Hold"],
+        label="Actions (sorted by priority score)",
         interactive=False,
+        wrap=True,
     )
 
     with gr.Row():
-        credit_hold_out = gr.Number(label="Credit Hold Count", precision=0)
-        legal_referral_out = gr.Number(label="Legal Referral Count", precision=0)
+        credit_hold_out = gr.Number(label="Credit Hold Count", precision=0, interactive=False)
+        legal_referral_out = gr.Number(label="Legal Referral Count", precision=0, interactive=False)
 
-    summary_out = gr.Textbox(label="Collection Summary", lines=3, interactive=False)
+    summary_out = gr.Textbox(label="Summary", interactive=False)
+
+    gr.Markdown("### Generated Letters")
+    letters_out = gr.Textbox(
+        label="Collection Letters & Memos",
+        lines=20,
+        interactive=False,
+        placeholder="Letters will appear here after running the plan...",
+    )
 
     gr.Examples(
         examples=[[EXAMPLE_CUSTOMERS_JSON, "2025-06-24", MODELS[0]]],
         inputs=[customer_input, as_of_date_input, model_dropdown],
-        label="Example: 6 customers across all aging buckets",
+        label="6 customers across all aging buckets",
     )
 
     run_btn.click(
         fn=generate_plan,
         inputs=[customer_input, as_of_date_input, model_dropdown],
-        outputs=[actions_table, credit_hold_out, legal_referral_out, summary_out],
+        outputs=[actions_table, credit_hold_out, legal_referral_out, letters_out, summary_out],
     )
 
 if __name__ == "__main__":
