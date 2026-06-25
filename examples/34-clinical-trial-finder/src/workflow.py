@@ -8,7 +8,7 @@ from .prompts import ELIGIBILITY_SYSTEM
 from .schema import PatientCriteria, TrialSearchResult
 
 _client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-_MODEL = "gpt-4o-mini"
+_MODEL = "gpt-4.1-nano"
 
 
 def run(criteria: PatientCriteria) -> TrialSearchResult:

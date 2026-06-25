@@ -38,7 +38,7 @@ def run(brand: str, days_back: int = 7) -> SentimentDigest:
 
     client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-4.1-nano",
         messages=[
             {"role": "system", "content": ANALYSIS_SYSTEM},
             {

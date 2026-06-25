@@ -92,7 +92,7 @@ class InvestorMaterials(BaseModel):
 class ClaimValidation(BaseModel):
     claim: str = Field(description="The exact financial claim being assessed.")
     model_used: str = Field(
-        description="The model that produced this validation (e.g. openai/gpt-4o-mini)."
+        description="The model that produced this validation (e.g. openai/gpt-4.1-nano)."
     )
     verdict: Literal["confirmed", "disputed", "inconclusive"] = Field(
         description="Whether the model considers the claim defensible given the stated assumptions."

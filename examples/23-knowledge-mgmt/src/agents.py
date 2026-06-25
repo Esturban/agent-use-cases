@@ -6,7 +6,7 @@ from .schema import KnowledgeBrief, Precedent
 
 def retrieve_precedents(query: str) -> list[Precedent]:
     """Select the most relevant corpus documents for the given query."""
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
     result: KnowledgeBrief = llm.with_structured_output(KnowledgeBrief).invoke(
         [RETRIEVAL_SYSTEM, {"role": "user", "content": f"Query: {query}"}]
     )
@@ -20,7 +20,7 @@ def synthesise_brief(query: str, precedents: list[Precedent]) -> KnowledgeBrief:
         for p in precedents
     ) or "No precedents retrieved."
 
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
     brief: KnowledgeBrief = llm.with_structured_output(KnowledgeBrief).invoke(
         [
             SYNTHESIS_SYSTEM,

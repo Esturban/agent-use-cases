@@ -13,7 +13,7 @@ def run(input_text: str) -> ExecOutput:
     Returns:
         ExecOutput with draft_reply, action_items, follow_up_tracker
     """
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
     assistant = ASSISTANT_SYSTEM | llm.with_structured_output(ExecOutput)
     return assistant.invoke(
         HumanMessage(content="Input to process:\n\n" + input_text)

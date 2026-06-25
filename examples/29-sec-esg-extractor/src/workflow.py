@@ -73,7 +73,7 @@ def analyse(ticker: str, company_name: str | None = None) -> ESGReport:
     )
 
     completion = client.beta.chat.completions.parse(
-        model="gpt-4o-mini",
+        model="gpt-4.1-nano",
         messages=[
             {"role": "system", "content": _ANALYSIS_SYSTEM},
             {"role": "user", "content": prompt},

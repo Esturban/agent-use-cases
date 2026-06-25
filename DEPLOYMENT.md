@@ -11,10 +11,12 @@
 | Lead Qualifier | ✅ `qualify` | ✅ `_client()` | ✅ (post-fix) | None |
 | ReAct Agent | ✅ `run_agent` | ✅ `_client()` | ✅ (post-fix) | None |
 
-### Pre-deployment fixes applied (same commit)
+### Notes on current requirements.txt
 
-1. **README.md** — added HF Spaces YAML frontmatter (required by Spaces router).
-2. **requirements.txt** — removed unused heavy deps (`langgraph`, `langchain-openai`, `langchain-core`, `python-dotenv`, `pydantic-ai`); added `pydantic>=2.0.0` (imported directly in app.py); pinned `openai>=1.40.0` (`.beta.chat.completions.parse` was added in 1.40).
+1. **README.md** — HF Spaces YAML frontmatter is present (`sdk: gradio`, `sdk_version: "4.0.0"`, `app_file: app.py`, `python_version: "3.11"`).
+2. **requirements.txt** — contains the full dependency set for all standalone examples (`langgraph`, `langchain-openai`, `langchain-core`, `python-dotenv`, `pydantic-ai`, `requests`). These are unused by `app.py` but are retained so `pip install -r requirements.txt` works for the standalone `examples/` directory. They increase Space cold-start but cause no errors.
+3. **app.py** only imports: `gradio`, `openai>=1.40.0` (`.beta.chat.completions.parse` added in 1.40), `pydantic>=2.0.0`. All three are covered.
+4. **sdk_version: "4.0.0"** in README frontmatter pins Gradio on HF Spaces. `requirements.txt` has `gradio>=4.0.0` which is already satisfied — pip will not upgrade, so the Space runs Gradio 4.0.0 as intended.
 
 ---
 
@@ -115,8 +117,7 @@ EOF
 
 Space URL: `https://huggingface.co/spaces/Esturban/agent-use-cases`
 
-Check the **Logs** tab in the Space UI — the app starts in ~30–60s on the free CPU tier.
-Cold-start expected after slimmed requirements.txt: ~25s (vs ~90s with the old heavy deps).
+Check the **Logs** tab in the Space UI — the app starts in ~60–90s on the free CPU tier (full requirements.txt with all example deps).
 
 ---
 

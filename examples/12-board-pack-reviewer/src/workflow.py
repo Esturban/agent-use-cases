@@ -29,7 +29,7 @@ def run(board_pack_text: str) -> DirectorBriefing:
         DirectorBriefing with top_risks, information_gaps, decisions_required,
         and questions_for_management
     """
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
     reviewer = REVIEWER_SYSTEM | llm.with_structured_output(DirectorBriefing)
     return reviewer.invoke(
         HumanMessage(content="Board pack to review:\n\n" + board_pack_text)

@@ -8,7 +8,7 @@ from .prompts import BLOG_SYSTEM, EMAIL_SYSTEM, SOCIAL_SYSTEM
 from .schema import BlogOutline, CampaignBrief, ContentPack, EmailCopy, SocialPost
 
 _client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
-_MODEL = "gpt-4o-mini"
+_MODEL = "gpt-4.1-nano"
 
 
 def _brief_user_message(brief: CampaignBrief) -> str:

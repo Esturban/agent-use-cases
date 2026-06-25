@@ -13,7 +13,7 @@ def run(regulation_text: str) -> ComplianceSummary:
     Returns:
         ComplianceSummary with fully cited obligations, deadlines, and penalties
     """
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
     researcher = RESEARCHER_SYSTEM | llm.with_structured_output(ComplianceSummary)
     return researcher.invoke(
         HumanMessage(content="Regulation text to analyse:\n\n" + regulation_text)

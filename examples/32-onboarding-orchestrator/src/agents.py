@@ -7,7 +7,7 @@ from .prompts import FACILITIES_SYSTEM, HR_SYSTEM, IT_SYSTEM, SYNTHESIS_SYSTEM
 from .schema import NewHire, OnboardingPlan, SubAgentStatus
 
 _client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-_MODEL = "gpt-4o-mini"
+_MODEL = "gpt-4.1-nano"
 
 
 def run_sub_agent(system: str, new_hire: NewHire) -> SubAgentStatus:

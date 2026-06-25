@@ -37,7 +37,7 @@ def run(screening_brief: str) -> ScreeningResult:
     Returns:
         ScreeningResult with shortlist ranked by overall_score descending
     """
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
     screener = SCREENER_SYSTEM | llm.with_structured_output(ScreeningResult)
     return screener.invoke(
         HumanMessage(content="Screening brief and targets:\n\n" + screening_brief)

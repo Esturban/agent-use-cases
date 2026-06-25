@@ -27,7 +27,7 @@ from .schema import (
 
 _PERSONAS: list[InvestorPersona] = list(get_args(InvestorPersona))
 
-_PRIMARY_MODEL = "gpt-4o-mini"
+_PRIMARY_MODEL = "gpt-4.1-nano"
 
 
 def _get_primary_client() -> OpenAI:

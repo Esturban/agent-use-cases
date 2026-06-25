@@ -13,7 +13,7 @@ def run(company_brief: str) -> ReadinessReport:
     Returns:
         ReadinessReport with dimensional scores, gates, and prioritized critical path
     """
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
     advisor = ADVISOR_SYSTEM | llm.with_structured_output(ReadinessReport)
     return advisor.invoke(
         HumanMessage(content="Company brief:\n\n" + company_brief)

@@ -6,7 +6,7 @@ from .prompts import PARSE_SYSTEM, POSTMORTEM_SYSTEM
 from .schema import IncidentTimeline, Postmortem
 
 _client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
-_MODEL = "gpt-4o-mini"
+_MODEL = "gpt-4.1-nano"
 
 
 def _parse_timeline(raw_log: str) -> IncidentTimeline:

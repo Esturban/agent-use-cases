@@ -10,7 +10,7 @@ def run(rfp_text: str) -> dict:
     Returns:
         {"outline": ProposalOutline, "proposal": Proposal}
     """
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
     outline = outline_rfp(llm, rfp_text)
     proposal = draft_proposal(llm, rfp_text, outline)
     return {"outline": outline, "proposal": proposal}

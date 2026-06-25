@@ -52,7 +52,7 @@ def init_state(project_name: str) -> ProjectState:
 
 def apply_update(current: ProjectState, update: UpdateInput) -> ProjectState:
     """Apply one unstructured update to the current project state."""
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
     structured_llm = llm.with_structured_output(ProjectState)
 
     delta: ProjectState = structured_llm.invoke(
