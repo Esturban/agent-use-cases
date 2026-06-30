@@ -51,6 +51,12 @@ Keys needed:
 | 38 | [Deal Room Analyst](./examples/38-deal-room-analyst/README.md) | Full M&A pipeline — contract review → diligence → financial model → board memo; halts and escalates if any stage falls below confidence threshold | Corporate Finance, M&A, Legal | Advanced | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/38-deal-room-analyst/deal_room_analyst_workbook.ipynb) |
 | 42 | [Adaptive Investor Outreach](./examples/42-adaptive-investor-outreach/README.md) | 3-year financial model → tailored materials per investor persona; every financial claim cross-validated across 3 models before inclusion | Corporate Finance, Investor Relations | Advanced | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/42-adaptive-investor-outreach/adaptive_investor_outreach_workbook.ipynb) |
 
+### Accounting and Controls
+
+| # | Example | What it solves | Departments | Difficulty | Colab |
+|---|---------|---------------|-------------|:----------:|:-----:|
+| 44 | [JV Posting Agent](./examples/44-jv-posting-agent/README.md) | Turns business event descriptions into balanced, GL-coded journal entries; a deterministic Python validator enforces debit=credit before posting | Finance, Accounting, Controls | Intermediate | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/44-jv-posting-agent/jv_posting_workbook.ipynb) |
+
 ### Legal and Compliance
 
 | # | Example | What it solves | Departments | Difficulty | Colab |
