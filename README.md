@@ -56,6 +56,7 @@ Keys needed:
 | # | Example | What it solves | Departments | Difficulty | Colab |
 |---|---------|---------------|-------------|:----------:|:-----:|
 | 44 | [JV Posting Agent](./examples/44-jv-posting-agent/README.md) | Turns business event descriptions into balanced, GL-coded journal entries; a deterministic Python validator enforces debit=credit before posting | Finance, Accounting, Controls | Intermediate | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/44-jv-posting-agent/jv_posting_workbook.ipynb) |
+| 45 | [AP Invoice Processor](./examples/45-ap-invoice-processor/README.md) | Runs vendor invoices through a 3-way match against PO and goods receipt, classifies discrepancies, and routes to the correct approval tier | Finance, Accounts Payable | Intermediate | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Esturban/agent-use-cases/blob/main/examples/45-ap-invoice-processor/ap_invoice_workbook.ipynb) |
 
 ### Legal and Compliance
 
