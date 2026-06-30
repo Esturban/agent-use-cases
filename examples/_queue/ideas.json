@@ -1305,7 +1305,7 @@
     {
       "id": 90,
       "slug": "90-approval-gate-pattern",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "intro",
