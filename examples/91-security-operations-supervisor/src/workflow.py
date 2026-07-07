@@ -162,9 +162,12 @@ def _synthesize(state: GraphState) -> dict:
     findings = [SecurityFindingReport.model_validate(f) for f in state["findings"]]
     correlations = _detect_correlations(digest)
 
-    if any(f.severity == "P0" for f in findings):
+    # compliance_evidence reports on evidence gaps, not live operational risk --
+    # its self-assigned severity shouldn't drive the aggregate posture.
+    operational = [f for f in findings if f.domain != "compliance_evidence"]
+    if any(f.severity == "P0" for f in operational):
         posture: Literal["green", "amber", "red"] = "red"
-    elif any(f.severity in ("P1", "P2") for f in findings):
+    elif any(f.severity in ("P1", "P2") for f in operational):
         posture = "amber"
     else:
         posture = "green"
