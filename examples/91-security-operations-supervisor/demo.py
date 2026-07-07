@@ -6,6 +6,7 @@ brief is shown. Same two-stage shape as the 90-approval-gate-pattern demo,
 applied on top of conditional multi-domain dispatch.
 """
 
+import json
 import os
 
 import gradio as gr
@@ -35,11 +36,11 @@ footer { display: none !important; }
 
 HEADER = """\
 # 91 · Security Operations Supervisor
-Run a daily security signal digest through conditional domain dispatch and a materiality-gated escalation.
+Run a daily security signal digest and see which specialists actually get called, and what it takes for a risky recommendation to become an approved action.
 
-> **Harness concept — conditional dispatch + gated escalation:** Only domains with active signal in\
- the digest are dispatched. Any P0/P1 finding pauses the graph at a real `interrupt()` gate\
- (copied from the approval-gate pattern, id 90) before its recommendation is treated as actionable.
+> Only the domains with active signal in the digest run at all. If the most urgent finding is P0/P1,\
+ the brief pauses for a real human decision -- approve, edit the payload, or reject -- before that\
+ recommendation is treated as anything more than a suggestion.
 """
 
 PRESETS = {
@@ -79,6 +80,7 @@ def run_propose(preset_name):
             result["thread_id"],
             "",
             [],
+            json.dumps(proposed.payload, indent=2),
         )
 
     brief = result["brief"]
@@ -89,16 +91,26 @@ def run_propose(preset_name):
         None,
         "\n".join(brief.cross_domain_correlations) or "(none)",
         _brief_rows(brief),
+        "",
     )
 
 
-def run_resume(thread_id, decision, rationale):
+def run_resume(thread_id, decision, edited_payload_text, rationale):
     if not thread_id:
         raise gr.Error("Run a digest that pauses at the approval gate first.")
     if not rationale or not rationale.strip():
         raise gr.Error("A rationale is required for every decision.")
 
-    approval = ApprovalDecision(decision=decision, rationale=rationale)
+    edited_payload = None
+    if decision == "edit":
+        if not edited_payload_text or not edited_payload_text.strip():
+            raise gr.Error("Decision is 'edit' but no edited payload was provided.")
+        try:
+            edited_payload = json.loads(edited_payload_text)
+        except json.JSONDecodeError as exc:
+            raise gr.Error(f"Edited payload is not valid JSON: {exc}") from exc
+
+    approval = ApprovalDecision(decision=decision, edited_payload=edited_payload, rationale=rationale)
     resumed = resume(thread_id, approval)
     brief = resumed["brief"]
     gate_result = resumed["gate_result"]
@@ -130,6 +142,11 @@ with gr.Blocks(title="Security Operations Supervisor", theme=gr.themes.Soft(), c
             decision_input = gr.Radio(
                 choices=["approve", "edit", "reject"], label="Decision", value="approve"
             )
+            edited_payload_input = gr.Code(
+                label="Edited payload (JSON, used only when decision = edit)",
+                language="json",
+                lines=4,
+            )
             rationale_input = gr.Textbox(
                 label="Rationale", lines=2, placeholder="Why -- always logged, even on approve."
             )
@@ -160,12 +177,13 @@ with gr.Blocks(title="Security Operations Supervisor", theme=gr.themes.Soft(), c
             thread_state,
             correlations_out,
             findings_out,
+            edited_payload_input,
         ],
     )
 
     resume_btn.click(
         fn=run_resume,
-        inputs=[thread_state, decision_input, rationale_input],
+        inputs=[thread_state, decision_input, edited_payload_input, rationale_input],
         outputs=[status_out, gate_detail_out, correlations_out, findings_out],
     )
 
