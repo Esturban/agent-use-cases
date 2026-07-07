@@ -22,15 +22,23 @@ from .schema import (
 )
 
 
-def _run(llm: ChatOpenAI, system, payload, domain: str) -> SecurityFindingReport:
-    """Force `domain` deterministically rather than trusting the model to echo it
-    back correctly -- observed in practice that compliance_evidence, given a
-    payload full of other domains' labels, sometimes copies one of those instead
-    of setting its own.
+def _run(
+    llm: ChatOpenAI, system, payload, domain: str, force_requires_approval: bool | None = None
+) -> SecurityFindingReport:
+    """Force `domain` (and, for compliance_evidence, `requires_approval`)
+    deterministically rather than trusting the model to set them correctly --
+    observed in practice that compliance_evidence, given a payload full of
+    other domains' labels and severities, sometimes echoes one of those back
+    (wrong domain) or ignores its "always False" instruction (wrong
+    requires_approval), which would wrongly trigger the approval gate on a
+    quiet day.
     """
     structured = llm.with_structured_output(SecurityFindingReport, method="function_calling")
     result = structured.invoke([system, ("human", json.dumps(payload))])
-    return result.model_copy(update={"domain": domain})
+    updates = {"domain": domain}
+    if force_requires_approval is not None:
+        updates["requires_approval"] = force_requires_approval
+    return result.model_copy(update=updates)
 
 
 def threat_triage_agent(llm: ChatOpenAI, auth_events: list[AuthEvent]) -> SecurityFindingReport:
@@ -67,4 +75,5 @@ def compliance_evidence_agent(
         COMPLIANCE_EVIDENCE_SYSTEM,
         [f.model_dump() for f in findings],
         domain="compliance_evidence",
+        force_requires_approval=False,
     )
