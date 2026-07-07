@@ -1320,7 +1320,7 @@
     {
       "id": 91,
       "slug": "91-security-operations-supervisor",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "security-ops",
