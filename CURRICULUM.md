@@ -223,9 +223,12 @@ Modules 7–8 should not start until the org has real production experience from
 modules and an actual appetite for letting an agent's recommendation trigger something
 irreversible.
 
-## How to use this alongside CATALOG.md and GUIDELINES.md
+## How to use this alongside the other docs
 
 - **This file** answers "what order should we adopt these capabilities in."
+- **[AGENCY_DESIGN.md](./AGENCY_DESIGN.md)** answers "whose role does each agent map to,
+  how much human oversight does this specific step need, and which framework fits the
+  team that will own it" — read it once you've picked a module here.
 - **[CATALOG.md](./CATALOG.md)** answers "which specific example matches my problem," sorted
   by difficulty and department.
 - **[GUIDELINES.md](./GUIDELINES.md)** answers "how do I read, run, and adapt one example
