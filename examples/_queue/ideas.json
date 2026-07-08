@@ -1420,7 +1420,7 @@
     {
       "id": 97,
       "slug": "97-ledger-integrity-supervisor",
-      "status": "in-progress",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "governance-controls",
