@@ -23,6 +23,7 @@ class JournalLine(BaseModel):
 class JournalEntry(BaseModel):
     entry_id: str
     description: str
+    counterparty: str = Field(description="Vendor or customer this entry relates to")
     lines: list[JournalLine]
 
 
