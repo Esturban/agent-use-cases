@@ -651,7 +651,7 @@
     {
       "id": 49,
       "slug": "49-month-end-close-orchestrator",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "finance-accounting",
