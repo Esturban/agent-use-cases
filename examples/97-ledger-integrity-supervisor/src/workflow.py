@@ -181,7 +181,10 @@ def _synthesize(state: GraphState) -> dict:
     )
     gate_result = ActionResult.model_validate(state["gate_result"]) if state.get("gate_result") else None
 
-    narrative = audit_trail_synthesizer(exceptions, gated_exception, gate_result)
+    total_exposure = round(sum(e.financial_exposure for e in exceptions), 2)
+    narrative = audit_trail_synthesizer(
+        exceptions, gated_exception, gate_result, total_exposure, state["correlations"]
+    )
 
     if not exceptions:
         close_status: Literal["blocked", "conditionally_closed", "closed"] = "closed"
@@ -194,7 +197,7 @@ def _synthesize(state: GraphState) -> dict:
         period=state["close_data"]["period"],
         exceptions=exceptions,
         cross_domain_correlations=state["correlations"],
-        total_exposure=round(sum(e.financial_exposure for e in exceptions), 2),
+        total_exposure=total_exposure,
         close_status=close_status,
         audit_narrative=narrative,
     )

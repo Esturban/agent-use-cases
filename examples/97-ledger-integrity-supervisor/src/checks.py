@@ -61,14 +61,17 @@ def check_bank_reconciliation(
         for gl in gl_entries:
             if gl.entry_id in matched_gl_ids:
                 continue
-            if abs(txn.amount + gl.amount) < 0.01:  # opposite-signed, same magnitude
+            # A bank outflow (negative) books as a credit to cash (also negative
+            # here); a bank inflow (positive) books as a debit (also positive).
+            # Same sign, same magnitude is a match -- not opposite signs.
+            if abs(txn.amount - gl.amount) < 0.01:
                 matched_gl_ids.add(gl.entry_id)
                 break
 
     exceptions = []
     for txn in bank_txns:
         matched = any(
-            abs(txn.amount + gl.amount) < 0.01 and gl.entry_id in matched_gl_ids
+            abs(txn.amount - gl.amount) < 0.01 and gl.entry_id in matched_gl_ids
             for gl in gl_entries
         )
         if matched:
