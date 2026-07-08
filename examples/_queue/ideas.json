@@ -1320,7 +1320,7 @@
     {
       "id": 91,
       "slug": "91-security-operations-supervisor",
-      "status": "pending",
+      "status": "done",
       "priority": "high",
       "framework": "langgraph",
       "domain": "security-ops",
@@ -1420,7 +1420,7 @@
     {
       "id": 97,
       "slug": "97-ledger-integrity-supervisor",
-      "status": "pending",
+      "status": "in-progress",
       "priority": "high",
       "framework": "langgraph",
       "domain": "governance-controls",
